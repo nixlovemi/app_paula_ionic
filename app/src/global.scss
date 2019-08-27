@@ -24,3 +24,148 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+ion-content{
+  --ion-background-color: #eee;
+}
+.txt_title{
+  color: #00bcd4;
+  font-weight: bold;
+  font-size: 20px;
+}
+.btn_info{
+  --background: #00bcd4;
+  --color: #FFF;
+  --background-hover: #00a2b8;
+}
+.card-white{
+  background: #FFF;
+}
+.card-new .title{
+  border-radius: 3px;
+  margin-top: -20px;
+  padding: 15px;
+  box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 188, 212, 0.4);
+  background: linear-gradient(60deg, #26c6da, #00acc1);
+  color: #FFF;
+  font-size: 20px;
+  font-weight: bold;
+}
+.card-new ion-item{
+  --background: transparent;
+}
+.custom-input{
+  font-size: 13px;
+}
+.custom-label{
+  font-size: 13px !important;
+}
+.custom-toggle{
+  --background: #999999;
+  --background-checked: #00bcd4;
+  --handle-background: #FFF;
+  --handle-background-checked: #FFF;
+}
+.buttom-gray{
+  --color: #fff;
+  --background: #999999;
+  --background-hover: #888888;
+  --border-color: #999999;
+  --box-shadow: 0 2px 2px 0 rgba(153, 153, 153, 0.14), 0 3px 1px -2px rgba(153, 153, 153, 0.2), 0 1px 5px 0 rgba(153, 153, 153, 0.12);
+  font-size: 13px;
+}
+.buttom-blue{
+  --color: #fff;
+  --background: #00bcd4;
+  --background-hover: #00a2b8;
+  --border-color: #00bcd4;
+  --box-shadow: 0 2px 2px 0 rgba(153, 153, 153, 0.14), 0 3px 1px -2px rgba(153, 153, 153, 0.2), 0 1px 5px 0 rgba(153, 153, 153, 0.12);
+  font-size: 13px;
+}
+.profile-photo-small{
+  height: 40px;
+  width: 40px;
+}
+.rounded-circle{
+  border-radius: 50% !important;
+}
+.img-fluid{
+  max-width: 100%;
+  height: auto;
+}
+.text-info{
+  color: #00bcd4;
+  --color: #00bcd4;
+}
+.text-success{
+  color: #4caf50;
+  --color: #4caf50;
+}
+.text-danger{
+  color: #f44336;
+  --color: #f44336;
+}
+.card-postagens{
+  margin-bottom: 20px;
+}
+.card-postagens .info-top{
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.card-postagens .content{
+  margin-bottom: 15px;
+}
+.card-postagens .titulo{
+  font-weight: bold;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+.card-postagens .autor{
+  position: relative;
+  top: -3px;
+  font-size: 12px;
+  color: #808080;
+}
+.card-postagens .comments{
+  padding-top: 15px;
+  border-top: solid 1px #ccc;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+.card-postagens .img-comment{
+  width: 28px;
+  height: 28px;
+}
+.card-postagens .comments ion-textarea{
+  margin-top: -7px;
+  --padding-top: 0;
+  --padding-start: 10px;
+  --padding-end: 0;
+  --padding-bottom: 0;
+}
+.card-postagens .comments .comments-loop{
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+.card-postagens .comments .comments-loop .comment-text{
+  font-size: 13.5px;
+  background-color: #f5f5f5;
+  border: solid 1px #f5f5f5;
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 0;
+  margin-left: 8px;
+}
+.card-postagens .comments .comments-loop .comment-text span{
+  font-weight: bold;
+  color: #00bcd4;
+  margin-right: 8px;
+}
+.action-sheet-button-inner{
+  --color: 999;
+}
