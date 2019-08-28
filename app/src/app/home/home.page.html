@@ -127,6 +127,10 @@
         </ion-grid>
       </div>
 
+      <div *ngIf="i.youtube.length>0" class="embed-container">
+        <iframe *ngFor="let y of i.youtube" [src]="sanitizer.bypassSecurityTrustResourceUrl('https://www.youtube.com/embed/' + y.id)" frameborder='0' allowfullscreen></iframe>
+      </div>
+
       <div class="comments">
         <div class="comments-loop">
           <div class="dv-img">

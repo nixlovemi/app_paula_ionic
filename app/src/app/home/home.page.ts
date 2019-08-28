@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ActionSheetController } from '@ionic/angular';
+import { DomSanitizer } from '@angular/platform-browser';
+
 import { PgGaleriaImagemPage } from '../pg-galeria-imagem/pg-galeria-imagem.page';
 
 @Component({
@@ -30,7 +32,8 @@ export class HomePage {
         {idx:7, url:"paisagem1.jpg", last:false}
         ,
         {idx:8, url:"paisagem2.jpg", last:false}
-      ]
+      ],
+      youtube: []
     }
     ,
     {
@@ -39,28 +42,34 @@ export class HomePage {
       autor: "Leandro Parra",
       imagens: [
         {idx:1, url:"paisagem1.jpg", last:false}
-      ]
+      ],
+      youtube:[]
     }
     ,
     {
       titulo: "Teste 3",
       data: "28/08/19 10:15",
       autor: "Leandro Parra",
-      imagens: []
+      imagens: [],
+      youtube:[
+        {id: "qpT5Md4TPJg"}
+      ]
     }
     ,
     {
       titulo: "Teste 4",
       data: "28/08/19 11:15",
       autor: "Leandro Parra",
-      imagens: []
+      imagens: [],
+      youtube:[]
     }
     ,
   ];
 
   constructor(
-    public actionSheetController: ActionSheetController,
-    public modalController: ModalController
+    private actionSheetController: ActionSheetController,
+    private modalController: ModalController,
+    public sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit()
