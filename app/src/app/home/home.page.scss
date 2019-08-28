@@ -36,3 +36,26 @@
 #lbl_publico{
   font-size: 12px;
 }
+.card-postagens .image-container {
+  min-height: 200px;
+  background-size: cover;
+}
+.card-postagens .imagem-galeria{
+  margin-bottom: 15px;
+}
+.card-postagens .imagem-galeria .image-container{
+  cursor: pointer;
+  position: relative;
+}
+.card-postagens .imagem-galeria .image-container .texto-mais-img{
+  width: 100%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: #000;
+  color: #FFF;
+  opacity: 0.8;
+  position: absolute;
+  bottom: 0;
+  font-size: 11px;
+  text-align: center;
+}

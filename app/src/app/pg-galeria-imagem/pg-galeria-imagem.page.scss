@@ -1,0 +1,13 @@
+ion-slides {
+  height: 100%;
+}
+ion-content{
+  --background: #000;
+}
+.image-container{
+  min-width: 100%;
+  min-height: 100%;
+  /*background-size: cover;*/
+  background-size: contain;
+  background-repeat: no-repeat;
+}

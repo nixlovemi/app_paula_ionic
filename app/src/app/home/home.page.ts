@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { ActionSheetController } from '@ionic/angular';
+import { PgGaleriaImagemPage } from '../pg-galeria-imagem/pg-galeria-imagem.page';
 
 @Component({
   selector: 'app-home',
@@ -7,18 +9,63 @@ import { ActionSheetController } from '@ionic/angular';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  arrLoop = [];
+  arrLoop = [
+    {
+      titulo: "Teste 1",
+      data: "28/08/19 08:15",
+      autor: "Leandro Parra",
+      imagens: [
+        {idx:1, url:"paisagem1.jpg", last:false}
+        ,
+        {idx:2, url:"paisagem2.jpg", last:false}
+        ,
+        {idx:3, url:"paisagem3.jpg", last:false}
+        ,
+        {idx:4, url:"paisagem1.jpg", last:true}
+        ,
+        {idx:5, url:"paisagem2.jpg", last:false}
+        ,
+        {idx:6, url:"paisagem3.jpg", last:false}
+        ,
+        {idx:7, url:"paisagem1.jpg", last:false}
+        ,
+        {idx:8, url:"paisagem2.jpg", last:false}
+      ]
+    }
+    ,
+    {
+      titulo: "Teste 2",
+      data: "28/08/19 09:15",
+      autor: "Leandro Parra",
+      imagens: [
+        {idx:1, url:"paisagem1.jpg", last:false}
+      ]
+    }
+    ,
+    {
+      titulo: "Teste 3",
+      data: "28/08/19 10:15",
+      autor: "Leandro Parra",
+      imagens: []
+    }
+    ,
+    {
+      titulo: "Teste 4",
+      data: "28/08/19 11:15",
+      autor: "Leandro Parra",
+      imagens: []
+    }
+    ,
+  ];
 
   constructor(
-    public actionSheetController: ActionSheetController
+    public actionSheetController: ActionSheetController,
+    public modalController: ModalController
   ) {}
 
   ngOnInit()
   {
-    for(var i=0; i<=15; i++){
-      this.arrLoop.push(i);
-    }
-    console.log(this.arrLoop);
+
   }
 
   async asUploadOptions() {
@@ -83,4 +130,14 @@ export class HomePage {
     await actionSheet.present();
   }
 
+  async modalGaleriaImg(imagens, idx) {
+    const modal = await this.modalController.create({
+      component: PgGaleriaImagemPage,
+      componentProps: {
+        'imagens': imagens,
+        'idx': idx,
+      }
+    });
+    return await modal.present();
+  }
 }
