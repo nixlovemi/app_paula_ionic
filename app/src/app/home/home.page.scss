@@ -40,10 +40,7 @@
   min-height: 200px;
   background-size: cover;
 }
-.card-postagens .imagem-galeria{
-  margin-bottom: 15px;
-}
-.card-postagens .embed-container{
+.card-postagens .imagem-galeria, .card-postagens .embed-container, .card-postagens .videos-container, .card-postagens .audio-container{
   margin-bottom: 15px;
 }
 .card-postagens .imagem-galeria .image-container{
@@ -61,4 +58,30 @@
   bottom: 0;
   font-size: 11px;
   text-align: center;
+}
+.card-postagens .arquivos-container{
+  border-top: solid 1px #ccc;
+  padding: 5px 0px 8px 0;
+}
+.card-postagens .arquivos-container ul{
+  padding: 0;
+  margin: 0;
+}
+.card-postagens .arquivos-container ul li{
+  list-style: none;
+  display: inline-block;
+  margin-right: 8px;
+}
+.card-postagens .arquivos-container ul li:last-child{
+  margin-right: 0;
+}
+.card-postagens .arquivos-container ul li a{
+  background-color: transparent;
+  color: #00bcd4;
+  box-shadow: none;
+  border: solid 1px;
+  border-radius: 0.2rem;
+  padding: 3px 6px;
+  font-size: 12px;
+  text-decoration: none;
 }

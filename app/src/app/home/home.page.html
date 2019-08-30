@@ -130,6 +130,28 @@
       <div *ngIf="i.youtube.length>0" class="embed-container">
         <iframe *ngFor="let y of i.youtube" [src]="sanitizer.bypassSecurityTrustResourceUrl('https://www.youtube.com/embed/' + y.id)" frameborder='0' allowfullscreen></iframe>
       </div>
+      <div *ngIf="i.videos.length>0" class="videos-container">
+        <a style="margin-bottom:5px;" href="javascript:;" *ngFor="let v of i.videos" (click)="playVideo(v.path)">
+          <img src="assets/play-button.png" />
+        </a>
+      </div>
+
+      <div *ngIf="i.audios.length>0" class="audio-container">
+        <a style="margin-bottom:5px;" href="javascript:;" *ngFor="let a of i.audios" (click)="playAudio(a.path)">
+          <img src="assets/music-button.png" />
+        </a>
+      </div>
+
+      <div *ngIf="i.arquivos.length>0" class="arquivos-container">
+        <ul>
+          <li *ngFor="let f of i.arquivos">
+            <a href="javascript:;" (click)="openPdf(f.path, f.type)">
+              <ion-icon class="" slot="start" src="assets/attach_file.svg"></ion-icon>
+              {{f.name}}
+            </a>
+          </li>
+        </ul>
+      </div>
 
       <div class="comments">
         <div class="comments-loop">

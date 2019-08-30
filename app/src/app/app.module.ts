@@ -10,6 +10,9 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { PgGaleriaImagemPageModule } from './pg-galeria-imagem/pg-galeria-imagem.module';
+import { File } from '@ionic-native/file/ngx';
+import { DocumentViewer } from '@ionic-native/document-viewer/ngx';
+import { StreamingMedia } from '@ionic-native/streaming-media/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,6 +26,9 @@ import { PgGaleriaImagemPageModule } from './pg-galeria-imagem/pg-galeria-imagem
   providers: [
     StatusBar,
     SplashScreen,
+    File,
+    DocumentViewer,
+    StreamingMedia,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
