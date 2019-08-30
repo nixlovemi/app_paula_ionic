@@ -7,10 +7,19 @@
         </ion-toolbar>
       </ion-header>
       <ion-content>
+        <div class="item item-avatar dv-holder-img-menu">
+          <div class="card-avatar">
+            <img src="assets/temp-foto-perfil-pes-1.jpg">
+          </div>
+          <p class="nome_logado">Leandro Parra</p>
+          <p class="nome_logado">nixlovemi@gmail.com</p>
+        </div>
+
         <ion-list>
           <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages">
-            <ion-item [routerDirection]="'root'" [routerLink]="[p.url]">
-              <ion-icon slot="start" [name]="p.icon"></ion-icon>
+            <img *ngIf="p.img!=''" [src]="'assets/' + p.img" alt="Circle Image" class="profile-photo-small rounded-circle img-fluid img-comment">
+            <ion-item [ngClass]="{'item-avatar' : p.img!=''}" [routerDirection]="'root'" [routerLink]="[p.url]">
+              <ion-icon *ngIf="p.img==''" slot="start" [src]="p.icon"></ion-icon>
               <ion-label>
                 {{p.title}}
               </ion-label>
