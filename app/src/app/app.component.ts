@@ -61,7 +61,7 @@ export class AppComponent {
     },
     {
       title: 'Sair',
-      url: '/home',
+      url: '',
       icon: 'assets/exit_to_app.svg',
       img:''
     }

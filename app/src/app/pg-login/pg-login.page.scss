@@ -1,0 +1,96 @@
+app-login {
+
+}
+
+$white-color: #fff;
+$height100: 100%;
+$bgSite: #2E363F;
+
+#bg-login {
+  width:100%;
+  height: $height100;
+}
+#bg-login::after {
+	content: '';
+  width:100%;
+  height: $height100;
+  background-image: url('../../assets/background-escuro.jpg');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: cover;
+	opacity: 0.9;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: -1;
+}
+
+ion-grid, form {
+  width:100%;
+  height: $height100;
+  z-index: 2;
+}
+
+ion-row {
+  height: $height100;
+}
+
+ion-col {
+  /*border: 1px solid #488aff;*/
+  /*background: $white-color;*/
+}
+
+ion-button {
+  font-weight: 300;
+}
+
+.required{
+  color: #ff0000;
+}
+
+#img-login{
+  width: 50%;
+  height: 50%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#img-login-form{
+  width: 178px;
+  height: 24px;
+  position: relative;
+  left: 50%;
+  margin-left: -89px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+ion-input{
+  color: #FFF;
+}
+ion-item{
+  --background: transparent;
+  --background-activated: rgba(0, 0, 0, .3);
+  --background-focused: rgba(0, 0, 0, .3);
+}
+.esqueci-senha{
+  font-size: 12px;
+  position: relative;
+  top: 8px;
+}
+.esqueci-senha a{
+  color: #FFF;
+}
+#btn-entrar{
+  --border-radius: 0px !important;
+  background-color: #5B9CB9;
+}
+.buttom-blue{
+  font-size: 20px;
+  --padding-top:0;
+  --padding-start:40px;
+  --padding-end:40px;
+  --padding-bottom:0;
+}
