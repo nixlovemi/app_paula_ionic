@@ -15,7 +15,8 @@ const routes: Routes = [
     path: 'list',
     loadChildren: () => import('./list/list.module').then(m => m.ListPageModule)
   },
-  { path: 'pg-galeria-imagem', loadChildren: './pg-galeria-imagem/pg-galeria-imagem.module#PgGaleriaImagemPageModule' }
+  { path: 'pg-galeria-imagem', loadChildren: './pg-galeria-imagem/pg-galeria-imagem.module#PgGaleriaImagemPageModule' },
+  { path: 'pg-perfil', loadChildren: './pg-perfil/pg-perfil.module#PgPerfilPageModule' }
 ];
 
 @NgModule({
