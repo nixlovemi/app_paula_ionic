@@ -9,19 +9,28 @@
       <ion-content>
         <div class="item item-avatar dv-holder-img-menu">
           <div class="card-avatar">
-            <img (click)="abrePerfil()" routerLink="/pg-perfil" routerDirection="root" src="assets/temp-foto-perfil-pes-1.jpg">
+            <img (click)="abrePerfil()" routerLink="/pg-perfil" routerDirection="root" [src]="infoUsuario.foto">
           </div>
-          <p class="nome_logado">Leandro Parra</p>
-          <p class="nome_logado">nixlovemi@gmail.com</p>
+          <p class="nome_logado">{{infoUsuario.nome}}</p>
+          <p class="nome_logado">{{infoUsuario.email}}</p>
         </div>
 
         <ion-list>
-          <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages">
-            <img *ngIf="p.img!=''" [src]="'assets/' + p.img" alt="Circle Image" class="profile-photo-small rounded-circle img-fluid img-comment">
-            <ion-item [ngClass]="{'item-avatar' : p.img!=''}" [routerDirection]="'root'" [routerLink]="[p.url]">
-              <ion-icon *ngIf="p.img==''" slot="start" [src]="p.icon"></ion-icon>
+          <ion-menu-toggle auto-hide="false">
+            <div *ngFor="let p of appPages">
+              <img *ngIf="p.img!=''" [src]="p.img" alt="Circle Image" class="profile-photo-small rounded-circle img-fluid img-comment">
+              <ion-item [ngClass]="{'item-avatar' : p.img!=''}" [routerDirection]="'root'" [routerLink]="[p.url]">
+                <ion-icon *ngIf="p.img==''" slot="start" [src]="p.icon"></ion-icon>
+                <ion-label>
+                  {{p.title}}
+                </ion-label>
+              </ion-item>
+            </div>
+
+            <ion-item (click)="logout()">
+              <ion-icon slot="start" src="assets/exit_to_app.svg"></ion-icon>
               <ion-label>
-                {{p.title}}
+                Sair
               </ion-label>
             </ion-item>
           </ion-menu-toggle>

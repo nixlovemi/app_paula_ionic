@@ -17,6 +17,7 @@
     "@angular/compiler": "~8.1.2",
     "@angular/core": "~8.1.2",
     "@angular/forms": "~8.1.2",
+    "@angular/http": "^7.2.15",
     "@angular/platform-browser": "~8.1.2",
     "@angular/platform-browser-dynamic": "~8.1.2",
     "@angular/router": "~8.1.2",
@@ -27,12 +28,15 @@
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic-native/streaming-media": "^5.12.0",
     "@ionic/angular": "^4.7.1",
+    "@ionic/storage": "^2.2.0",
     "chart.js": "^2.8.0",
     "cordova-android": "8.0.0",
     "cordova-ios": "5.0.1",
     "cordova-plugin-document-viewer": "0.9.11",
     "cordova-plugin-streaming-media": "git+https://github.com/nchutchind/cordova-plugin-streaming-media.git",
+    "cordova-sqlite-storage": "3.3.0",
     "core-js": "^2.5.4",
+    "moment": "^2.24.0",
     "rxjs": "~6.5.1",
     "tslib": "^1.9.0",
     "zone.js": "~0.9.1"
@@ -81,7 +85,8 @@
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-file": {},
       "cordova-plugin-document-viewer": {},
-      "cordova-plugin-streaming-media": {}
+      "cordova-plugin-streaming-media": {},
+      "cordova-sqlite-storage": {}
     },
     "platforms": [
       "ios",

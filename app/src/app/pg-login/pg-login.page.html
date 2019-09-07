@@ -7,16 +7,17 @@
 
     			<div padding>
             <ion-item class="inpt-transp">
-              <ion-input tabindex="1" type="email" placeholder="Usuário" name="usuario" type="text" required></ion-input>
+              <ion-input [(ngModel)]="frmLogin.usuario" tabindex="1" type="email" placeholder="Usuário" name="usuario" type="text" required></ion-input>
             </ion-item>
 
             <ion-item class="inpt-transp">
-              <ion-input tabindex="2" placeholder="Senha" name="senha" type="password" required></ion-input>
+              <ion-input [(ngModel)]="frmLogin.senha" tabindex="2" placeholder="Senha" name="senha" type="password" required></ion-input>
             </ion-item>
     			</div>
 
           <div text-center>
-            <ion-button class="buttom-blue" routerLink="/home" routerDirection="root">
+            <!-- routerLink="/home" routerDirection="root" -->
+            <ion-button (click)="executaLogin()" class="buttom-blue">
               Entrar
             </ion-button>
           </div>

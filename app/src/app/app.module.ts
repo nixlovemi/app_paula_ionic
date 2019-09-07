@@ -13,6 +13,8 @@ import { PgGaleriaImagemPageModule } from './pg-galeria-imagem/pg-galeria-imagem
 import { File } from '@ionic-native/file/ngx';
 import { DocumentViewer } from '@ionic-native/document-viewer/ngx';
 import { StreamingMedia } from '@ionic-native/streaming-media/ngx';
+import { HttpModule } from '@angular/http';
+import { IonicStorageModule } from '@ionic/storage';
 
 @NgModule({
   declarations: [AppComponent],
@@ -21,7 +23,9 @@ import { StreamingMedia } from '@ionic-native/streaming-media/ngx';
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    PgGaleriaImagemPageModule
+    PgGaleriaImagemPageModule,
+    HttpModule,
+    IonicStorageModule.forRoot(),
   ],
   providers: [
     StatusBar,

@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from  "@angular/router";
+import { TbLoginService } from '../TbLogin/tb-login.service';
+import { UtilsService } from '../utils.service';
+import { MenuController, Events } from '@ionic/angular';
 
 @Component({
   selector: 'app-pg-login',
@@ -6,10 +10,51 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./pg-login.page.scss'],
 })
 export class PgLoginPage implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
+  frmLogin = {
+    usuario:'nixlovemi@gmail.com',
+    senha:'Sdrobs69',
   }
 
+  constructor(
+    private loginSrv: TbLoginService,
+    private utilsSrv: UtilsService,
+    private router: Router,
+    public menuCtrl: MenuController,
+    private events: Events,
+  ) { }
+
+  ngOnInit()
+  {
+    this.menuCtrl.enable(false);
+  }
+
+  async ionViewWillEnter(){ }
+
+  async executaLogin()
+  {
+    // pega info, faz login e pega retorno
+    await this.utilsSrv.getLoader('Carregando ...', 'dots');
+
+    let usuario = this.frmLogin.usuario;
+    let senha   = this.frmLogin.senha;
+    let retorno = await this.loginSrv.executaLogin(usuario, senha);
+
+    let erro    = retorno['erro'];
+    let msg     = retorno['msg'];
+    let httpSts = retorno['httpStatus'];
+
+    await this.utilsSrv.closeLoader();
+
+    if(erro == true){
+      this.utilsSrv.showAlert('Aviso!', '', msg, ['OK']);
+    } else {
+      await this.utilsSrv.setUsuario(retorno['Usuario']);
+      await this.utilsSrv.setGrupos(retorno['Grupos']);
+      await this.utilsSrv.setGrpIdLogado(retorno['Grupos'][0].grp_id);
+      await this.events.publish('carregarMenuInfo');
+
+      this.router.navigate(['/home']);
+    }
+    // ===================================
+  }
 }

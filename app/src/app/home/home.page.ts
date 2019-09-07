@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { ActionSheetController } from '@ionic/angular';
+import { ModalController, ActionSheetController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { PgGaleriaImagemPage } from '../pg-galeria-imagem/pg-galeria-imagem.page';
 import { File } from '@ionic-native/file/ngx';
 import { DocumentViewer } from '@ionic-native/document-viewer/ngx';
 import { StreamingMedia, StreamingVideoOptions } from '@ionic-native/streaming-media/ngx';
+import { UtilsService } from '../utils.service';
+import { Router, ActivatedRoute } from  "@angular/router";
+import { TbGrupoTimelineService } from  "../TbGrupoTimeline/tb-grupo-timeline.service";
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +18,7 @@ import { StreamingMedia, StreamingVideoOptions } from '@ionic-native/streaming-m
 })
 export class HomePage {
   arrLoop = [
-    {
+    /*{
       titulo: "Teste 1",
       data: "28/08/19 08:15",
       autor: "Leandro Parra",
@@ -91,7 +94,7 @@ export class HomePage {
       arquivos:[],
       videos:[
         {path:"www/assets/file_example.mp4"},
-        /*{path:"www/assets/file_example.avi"} @todo AINDA N FUNFA */
+        // {path:"www/assets/file_example.avi"} @todo AINDA N FUNFA
       ],
       audios:[]
     }
@@ -107,8 +110,12 @@ export class HomePage {
       audios:[
         {path:"www/assets/BARBAREX.mp3"}
       ]
-    }
+    }*/
   ];
+  grpId = 0; //param da URL
+
+  Usuario = {};
+  fotoLogado = '';
 
   constructor(
     private actionSheetController: ActionSheetController,
@@ -117,11 +124,141 @@ export class HomePage {
     public file: File,
     private document: DocumentViewer,
     private streamingMedia: StreamingMedia,
+    public utilsSrv: UtilsService,
+    private router: Router,
+    private actRoute: ActivatedRoute,
+    private TbGrupoTimelineSrv: TbGrupoTimelineService,
   ) {}
 
-  ngOnInit()
-  {
+  async ngOnInit(){
+    await this.actRoute.params.subscribe((res) => {
+      this.grpId = res.grp_id; //vem undefined qdo n tem param
+    });
 
+    var retUsuario = await this.utilsSrv.getUsuario();
+    if(!retUsuario["erro"]){
+      this.Usuario    = retUsuario["Usuario"];
+      this.fotoLogado = this.utilsSrv.getPathImgPadrao();
+      if(this.Usuario["foto"] != "" && this.Usuario["foto"] != null){
+        this.fotoLogado = this.utilsSrv.getWebsiteUrl() + this.Usuario["foto"];
+      }
+    }
+  }
+
+  async ionViewWillEnter()
+  {
+    let sessionOk = await this.utilsSrv.validaSession();
+    if(!sessionOk){
+      this.utilsSrv.showAlert('Aviso!', '', 'Houve um problema na sua sessão. Faça o login novamente!', ['OK']);
+      this.router.navigate(['']);
+    } else {
+      var retGruLogado = await this.utilsSrv.getGruIdLogado();
+      if(!retGruLogado["erro"]){
+        var gruIdLogado = retGruLogado["gruId"];
+        var retTimeline = await this.TbGrupoTimelineSrv.pegaPostagensGrupo(gruIdLogado);
+
+        await this.carregaTimeline(retTimeline);
+      }
+    }
+  }
+
+  async carregaTimeline(retTimeline)
+  {
+    await this.utilsSrv.getLoader('Carregando', 'Dots');
+
+    let Postagens    = retTimeline["Postagens"];
+    let Salvos       = retTimeline["Salvos"];
+    let Comentarios  = retTimeline["Respostas"];
+    let retGrpLogado = await this.utilsSrv.getGrpIdLogado();
+    let grpLogado    = 0;
+    if(!retGrpLogado["erro"]){
+      grpLogado = retGrpLogado["grpId"];
+    }
+
+    for(let idx in Postagens){
+      var Postagem     = Postagens[idx];
+      var grtId        = Postagem["grt_id"];
+      var ehPrivada    = (Postagem["grt_publico"] == 0);
+
+      // favorito
+      var ehFavoritado = false;
+      for(let grtIdSalvo in Salvos){
+        var objGrpIdSalvo = Salvos[grtIdSalvo];
+
+        if(grtIdSalvo == grtId){
+          for(let grpIdSalvo in objGrpIdSalvo){
+            if(+grpIdSalvo == +grpLogado){ //convertendo pra numero
+              ehFavoritado = true;
+            }
+          }
+        }
+
+        if(ehFavoritado){
+          break;
+        }
+      }
+      // ========
+
+      if(!ehPrivada){
+        var foto = this.utilsSrv.getPathImgPadrao();
+        if(Postagem["pes_foto"] != "" && Postagem["pes_foto"] != null){
+          foto = this.utilsSrv.getWebsiteUrl() + Postagem["pes_foto"];
+        }
+
+        var avaliacaoP = false;
+        var avaliacaoN = false;
+        if(Postagem["grt_avaliacao"] != null){
+          if(Postagem["grt_avaliacao"] == 1){
+            avaliacaoP = true;
+          } else {
+            avaliacaoN = true;
+          }
+        }
+
+        // respostas
+        var arrComentarios = [];
+        for(let grtIdComent in Comentarios){
+          if(grtIdComent == grtId){
+            for(let idxComentario in Comentarios[grtIdComent]){
+              var comentario = Comentarios[grtIdComent][idxComentario];
+              var fotoComent = this.utilsSrv.getPathImgPadrao();
+              if(comentario["pes_foto"] != "" && comentario["pes_foto"] != null){
+                fotoComent = this.utilsSrv.getWebsiteUrl() + comentario["pes_foto"];
+              }
+
+              var item2 = {
+                nome: comentario["pes_nome"],
+                comentario: comentario["grt_texto"],
+                foto: fotoComent,
+              };
+              arrComentarios.push(item2);
+            }
+          }
+        }
+        // =========
+
+        var item = {
+          titulo: Postagem["grt_titulo"],
+          data: moment(Postagem["dt_postagem"]).format("DD/MM HH:mm"),
+          autor: Postagem["pes_nome"],
+          texto: Postagem["grt_texto"],
+          foto: foto,
+          privada: ehPrivada,
+          favorito: ehFavoritado,
+          avaliacaoP: avaliacaoP,
+          avaliacaoN: avaliacaoN,
+          imagens: [],
+          youtube: [],
+          arquivos:[],
+          videos:[],
+          audios:[],
+          comentarios:arrComentarios,
+        };
+        this.arrLoop.push(item);
+      }
+    }
+
+    await this.utilsSrv.closeLoader();
   }
 
   async asUploadOptions()

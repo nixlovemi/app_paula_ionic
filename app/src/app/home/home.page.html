@@ -71,7 +71,7 @@
 
       <div class="info-top">
         <div style="margin-right:10px;" class="ion-float-left profile-photo-small">
-          <img src="assets/temp-foto-perfil-pes-1.jpg" alt="Circle Image" class="rounded-circle img-fluid">
+          <img [src]="i.foto" alt="Circle Image" class="rounded-circle img-fluid">
         </div>
         <div class="ion-float-left">
           <span class="titulo">
@@ -83,11 +83,12 @@
           </span>
           <br>
           <span style="position:relative; top:-5px;">
-            <ion-icon class="icone-privado" slot="start" src="assets/visibility_off.svg"></ion-icon>
-            &nbsp;
-            <ion-icon class="icone-avaliacao text-danger" slot="end" src="assets/thumb_down.svg"></ion-icon>
-            &nbsp;
-            <ion-icon class="icone-favorito text-success" slot="end" src="assets/favorite.svg"></ion-icon>
+            <ion-icon *ngIf="i.privada" class="icone-privado" slot="start" src="assets/visibility_off.svg"></ion-icon>
+            <!--&nbsp;-->
+            <ion-icon *ngIf="i.avaliacaoP" class="icone-avaliacao text-success" slot="end" src="assets/thumb_up.svg"></ion-icon>
+            <ion-icon *ngIf="i.avaliacaoN" class="icone-avaliacao text-danger" slot="end" src="assets/thumb_down.svg"></ion-icon>
+            <!--&nbsp;-->
+            <ion-icon *ngIf="i.favorito" class="icone-favorito text-success" slot="end" src="assets/favorite.svg"></ion-icon>
           </span>
         </div>
 
@@ -104,7 +105,7 @@
       </div>
 
       <div class="content">
-        Bacon ipsum dolor amet cow pork chop pork loin drumstick meatball rump tail, t-bone pork. Sausage drumstick sirloin tri-tip landjaeger burgdoggen pork chop pork bresaola. Ball tip cow rump biltong tri-tip tenderloin fatback shoulder beef shankle brisket leberkas pork ribeye ham hock.
+        {{i.texto}}
       </div>
 
       <div class="imagem-galeria" *ngIf="i.imagens.length >= 1">
@@ -154,23 +155,25 @@
       </div>
 
       <div class="comments">
-        <div class="comments-loop">
+        <div *ngFor="let c of i.comentarios" class="comments-loop">
           <div class="dv-img">
-            <img src="assets/temp-foto-perfil-pes-1.jpg" alt="Circle Image" class="profile-photo-small rounded-circle img-fluid img-comment">
+            <img [src]="c.foto" alt="Circle Image" class="profile-photo-small rounded-circle img-fluid img-comment">
           </div>
           <div class="dv-frente-img">
             <p class="comment-text">
-              <span>Leandro F. da Silva:</span>
-              123 é um comentário muito pequeno pq precisamos testar um comentário um pouco maior pra ver se não vai quebar tudo.
+              <span>{{c.nome}}:</span>
+              {{c.comentario}}
             </p>
           </div>
         </div>
 
-        <div class="dv-img">
-          <img src="assets/temp-foto-perfil-pes-1.jpg" alt="Circle Image" class="profile-photo-small rounded-circle img-fluid img-comment">
-        </div>
-        <div class="dv-frente-img">
-          <ion-textarea autoGrow="true" placeholder="Escreva um comentário"></ion-textarea>
+        <div class="comments-inserir">
+          <div class="dv-img">
+            <img src="{{fotoLogado}}" alt="Circle Image" class="profile-photo-small rounded-circle img-fluid img-comment">
+          </div>
+          <div class="dv-frente-img">
+            <ion-textarea autoGrow="true" placeholder="Escreva um comentário"></ion-textarea>
+          </div>
         </div>
       </div>
     </ion-card-content>

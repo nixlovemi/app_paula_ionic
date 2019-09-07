@@ -141,7 +141,9 @@ ion-content{
   height: 28px;
 }
 .card-postagens .comments ion-textarea{
-  margin-top: -7px;
+  margin-top: -2px;
+  border: solid 1px #EEE;
+  border-radius: 8px;
   --padding-top: 0;
   --padding-start: 10px;
   --padding-end: 0;
@@ -151,7 +153,10 @@ ion-content{
   display: block;
   width: 100%;
   overflow: hidden;
-  margin-bottom: 15px;
+  margin-bottom: 4px;
+}
+.card-postagens .comments .comments-inserir{
+  margin-top: 15px;
 }
 .card-postagens .comments .comments-loop .comment-text{
   font-size: 13.5px;
