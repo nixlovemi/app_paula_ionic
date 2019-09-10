@@ -17,7 +17,7 @@ export class TbGrupoTimelineService {
     this.appKey = this.utils.getAppKey();
   }
 
-  pegaPostagensGrupo(gru_id)
+  pegaPostagensGrupo(gru_id, grp_logado)
   {
     return new Promise(
     (resolve, reject) => {
@@ -26,6 +26,7 @@ export class TbGrupoTimelineService {
       let postData = {
         'appkey' : this.appKey,
         'gru_id' : gru_id,
+        'grp_id' : grp_logado,
       };
 
       let objRet = {
@@ -47,7 +48,7 @@ export class TbGrupoTimelineService {
         objRet.erro      = jsonRet.erro;
         objRet.Postagens = jsonRet.Postagens;
         objRet.Respostas = jsonRet.Respostas;
-        objRet.Arquivos  = jsonRet.Arquivos;
+        objRet.Arquivos  = jsonRet.Arquivos; //[imagens] [audio] [video] [documentos]
         objRet.Salvos    = jsonRet.Salvos;
         objRet.arrParam  = jsonRet.arrParam;
 

@@ -34,7 +34,6 @@ export class UtilsService {
       grpId = retGrpId['grpId'];
     }
 
-
     let gruId = 0;
     let pesId = 0;
     for(let item in Grupos){

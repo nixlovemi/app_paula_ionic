@@ -10,7 +10,7 @@
 <ion-content [forceOverscroll]="false" color="light" fullscreen="true">
   <ion-slides [options]="slideOpts">
     <ion-slide *ngFor="let image of imagens" [ngStyle]="{'background-color': '#000'}">
-      <img class="image-container" [src]="'assets/' + image.url + ''" />
+      <img class="image-container" [src]="'' + image.url + ''" />
       <!--<div class="image-container" [style.background-image]="'url(assets/' + image.url + ')'"></div>-->
     </ion-slide>
   </ion-slides>

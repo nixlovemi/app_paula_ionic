@@ -9,6 +9,7 @@ import { StreamingMedia, StreamingVideoOptions } from '@ionic-native/streaming-m
 import { UtilsService } from '../utils.service';
 import { Router, ActivatedRoute } from  "@angular/router";
 import { TbGrupoTimelineService } from  "../TbGrupoTimeline/tb-grupo-timeline.service";
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import * as moment from 'moment';
 
 @Component({
@@ -128,9 +129,11 @@ export class HomePage {
     private router: Router,
     private actRoute: ActivatedRoute,
     private TbGrupoTimelineSrv: TbGrupoTimelineService,
+    private iab: InAppBrowser,
   ) {}
 
-  async ngOnInit(){
+  async ngOnInit()
+  {
     await this.actRoute.params.subscribe((res) => {
       this.grpId = res.grp_id; //vem undefined qdo n tem param
     });
@@ -155,8 +158,11 @@ export class HomePage {
       var retGruLogado = await this.utilsSrv.getGruIdLogado();
       if(!retGruLogado["erro"]){
         var gruIdLogado = retGruLogado["gruId"];
-        var retTimeline = await this.TbGrupoTimelineSrv.pegaPostagensGrupo(gruIdLogado);
 
+        let retGrpLogado = await this.utilsSrv.getGrpIdLogado();
+        var grpLogado    = retGrpLogado["grpId"];
+
+        var retTimeline = await this.TbGrupoTimelineSrv.pegaPostagensGrupo(gruIdLogado, grpLogado);
         await this.carregaTimeline(retTimeline);
       }
     }
@@ -169,6 +175,7 @@ export class HomePage {
     let Postagens    = retTimeline["Postagens"];
     let Salvos       = retTimeline["Salvos"];
     let Comentarios  = retTimeline["Respostas"];
+    let Arquivos     = retTimeline["Arquivos"];
     let retGrpLogado = await this.utilsSrv.getGrpIdLogado();
     let grpLogado    = 0;
     if(!retGrpLogado["erro"]){
@@ -199,63 +206,137 @@ export class HomePage {
       }
       // ========
 
-      if(!ehPrivada){
-        var foto = this.utilsSrv.getPathImgPadrao();
-        if(Postagem["pes_foto"] != "" && Postagem["pes_foto"] != null){
-          foto = this.utilsSrv.getWebsiteUrl() + Postagem["pes_foto"];
-        }
+      var foto = this.utilsSrv.getPathImgPadrao();
+      if(Postagem["pes_foto"] != "" && Postagem["pes_foto"] != null){
+        foto = this.utilsSrv.getWebsiteUrl() + Postagem["pes_foto"];
+      }
 
-        var avaliacaoP = false;
-        var avaliacaoN = false;
-        if(Postagem["grt_avaliacao"] != null){
-          if(Postagem["grt_avaliacao"] == 1){
-            avaliacaoP = true;
-          } else {
-            avaliacaoN = true;
+      var avaliacaoP = false;
+      var avaliacaoN = false;
+      if(Postagem["grt_avaliacao"] != null){
+        if(Postagem["grt_avaliacao"] == 1){
+          avaliacaoP = true;
+        } else {
+          avaliacaoN = true;
+        }
+      }
+
+      // respostas
+      var arrComentarios = [];
+      for(let grtIdComent in Comentarios){
+        if(grtIdComent == grtId){
+          for(let idxComentario in Comentarios[grtIdComent]){
+            var comentario = Comentarios[grtIdComent][idxComentario];
+            var fotoComent = this.utilsSrv.getPathImgPadrao();
+            if(comentario["pes_foto"] != "" && comentario["pes_foto"] != null){
+              fotoComent = this.utilsSrv.getWebsiteUrl() + comentario["pes_foto"];
+            }
+
+            var item2 = {
+              nome: comentario["pes_nome"],
+              comentario: comentario["grt_texto"],
+              foto: fotoComent,
+            };
+            arrComentarios.push(item2);
           }
         }
+      }
+      // =========
 
-        // respostas
-        var arrComentarios = [];
-        for(let grtIdComent in Comentarios){
-          if(grtIdComent == grtId){
-            for(let idxComentario in Comentarios[grtIdComent]){
-              var comentario = Comentarios[grtIdComent][idxComentario];
-              var fotoComent = this.utilsSrv.getPathImgPadrao();
-              if(comentario["pes_foto"] != "" && comentario["pes_foto"] != null){
-                fotoComent = this.utilsSrv.getWebsiteUrl() + comentario["pes_foto"];
+      // anexos
+      var arrDocumentos = [];
+      var arrImagens    = [];
+      var arrYoutube    = [];
+      var arrVideos     = [];
+      var arrAudios     = [];
+
+      for(let grtIdArquivo in Arquivos){
+        if(grtIdArquivo == grtId){
+          // documentos
+          var Documentos = Arquivos[grtId]["documentos"];
+          for(let grtIdDocumento in Documentos){
+            var Doc     = Documentos[grtIdDocumento];
+            var itemDoc = {
+              name : Doc["gta_caminho"],
+              path : this.utilsSrv.getWebsiteUrl() + Doc["gta_caminho"],
+              type : "application/pdf",
+            };
+            arrDocumentos.push(itemDoc);
+          }
+          // ==========
+
+          // imagens
+          let idxImg    = 1;
+          var Imagens   = Arquivos[grtId]["imagens"];
+          var qtImagens = Object.keys(Imagens).length;
+          for(let grtIdImagens in Imagens){
+            var Img     = Imagens[grtIdImagens];
+            var itemImg = {
+              idx  : idxImg,
+              url  : this.utilsSrv.getWebsiteUrl() + Img["gta_caminho"],
+              last : (qtImagens > 4 && idxImg == 4),
+            }
+            idxImg = idxImg + 1;
+            arrImagens.push(itemImg);
+          }
+          // =======
+
+          // video
+          var Videos = Arquivos[grtId]["video"];
+          for(let grtIdVideos in Videos){
+            var Vid        = Videos[grtIdVideos];
+            var vidCaminho = Vid["gta_caminho"];
+            var ehYoutube  = (vidCaminho.indexOf('youtu.be') !== -1 || vidCaminho.indexOf('youtube.com') !== -1);
+
+            if(ehYoutube){
+              var videoid   = vidCaminho.match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/);
+              if(videoid != null){
+                var itemVidYT = {
+                  id: videoid[1]
+                };
+                arrYoutube.push(itemVidYT);
               }
-
-              var item2 = {
-                nome: comentario["pes_nome"],
-                comentario: comentario["grt_texto"],
-                foto: fotoComent,
+            } else {
+              var itemVid = {
+                path : this.utilsSrv.getWebsiteUrl() + vidCaminho
               };
-              arrComentarios.push(item2);
+              arrVideos.push(itemVid);
             }
           }
-        }
-        // =========
+          // =====
 
-        var item = {
-          titulo: Postagem["grt_titulo"],
-          data: moment(Postagem["dt_postagem"]).format("DD/MM HH:mm"),
-          autor: Postagem["pes_nome"],
-          texto: Postagem["grt_texto"],
-          foto: foto,
-          privada: ehPrivada,
-          favorito: ehFavoritado,
-          avaliacaoP: avaliacaoP,
-          avaliacaoN: avaliacaoN,
-          imagens: [],
-          youtube: [],
-          arquivos:[],
-          videos:[],
-          audios:[],
-          comentarios:arrComentarios,
-        };
-        this.arrLoop.push(item);
+          // audio
+          var Audios = Arquivos[grtId]["audio"];
+          for(let grtIdAudios in Audios){
+            var Aud     = Audios[grtIdAudios];
+            var itemAud = {
+              path : this.utilsSrv.getWebsiteUrl() + Aud["gta_caminho"],
+            };
+            arrAudios.push(itemAud);
+          }
+          // =====
+        }
       }
+      // ======
+
+      var item = {
+        titulo: Postagem["grt_titulo"],
+        data: moment(Postagem["dt_postagem"]).format("DD/MM HH:mm"),
+        autor: Postagem["pes_nome"],
+        texto: Postagem["grt_texto"],
+        foto: foto,
+        privada: ehPrivada,
+        favorito: ehFavoritado,
+        avaliacaoP: avaliacaoP,
+        avaliacaoN: avaliacaoN,
+        imagens: arrImagens,
+        youtube: arrYoutube,
+        arquivos:arrDocumentos,
+        videos:arrVideos,
+        audios:arrAudios,
+        comentarios:arrComentarios,
+      };
+      this.arrLoop.push(item);
     }
 
     await this.utilsSrv.closeLoader();
@@ -337,7 +418,7 @@ export class HomePage {
     return await modal.present();
   }
 
-  openPdf(vPath, vType)
+  openPdf(vPath)
   {
     /*
     if (this.platform.is('ios')) {
@@ -349,8 +430,8 @@ export class HomePage {
     /*console.log(1);
     this.document.viewDocument(this.file.applicationDirectory + 'www/assets/pdf-test.pdf', 'application/pdf', {});
     */
-    console.log(vPath, vType);
-    this.document.viewDocument(this.file.applicationDirectory + vPath, vType, {});
+
+    const browser = this.iab.create(vPath, '_blank', 'location=no,closebuttoncaption=Fechar,hidenavigationbuttons=yes,hideurlbar=yes,enableviewportscale=yes');
   }
 
   playVideo(vPath)
@@ -367,7 +448,7 @@ export class HomePage {
       shouldAutoClose: true,  // true(default)/false
       controls: true // true(default)/false. Used to hide controls on fullscreen
     };
-    this.streamingMedia.playVideo(this.file.applicationDirectory + vPath, options);
+    this.streamingMedia.playVideo(vPath, options);
   }
 
   playAudio(vPath)
@@ -386,6 +467,6 @@ export class HomePage {
         //console.log("Error! " + errMsg);
       }
     };
-    this.streamingMedia.playAudio(this.file.applicationDirectory + vPath, options);
+    this.streamingMedia.playAudio(vPath, options);
   }
 }

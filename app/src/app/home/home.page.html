@@ -112,13 +112,13 @@
         <ion-grid>
           <ion-row *ngIf="i.imagens.length == 1">
             <ion-col size="12" *ngFor="let image of i.imagens">
-              <div (click)="modalGaleriaImg(i.imagens, image.idx)" class="image-container" [style.background-image]="'url(assets/' + image.url + ')'"></div>
+              <div (click)="modalGaleriaImg(i.imagens, image.idx)" class="image-container" [style.background-image]="'url(' + image.url + ')'"></div>
             </ion-col>
           </ion-row>
 
           <ion-row *ngIf="i.imagens.length > 1">
             <ion-col size="6" size-md="4" size-xl="3" *ngFor="let image of i.imagens">
-              <div (click)="modalGaleriaImg(i.imagens, image.idx)" *ngIf="image.idx <= 4" class="image-container" [style.background-image]="'url(assets/' + image.url + ')'">
+              <div (click)="modalGaleriaImg(i.imagens, image.idx)" *ngIf="image.idx <= 4" class="image-container" [style.background-image]="'url(' + image.url + ')'">
                 <div *ngIf="image.last && i.imagens.length > 4" class="texto-mais-img">
                   Veja todas as imagens
                 </div>
@@ -146,7 +146,7 @@
       <div *ngIf="i.arquivos.length>0" class="arquivos-container">
         <ul>
           <li *ngFor="let f of i.arquivos">
-            <a href="javascript:;" (click)="openPdf(f.path, f.type)">
+            <a href="javascript:;" (click)="openPdf(f.path)">
               <ion-icon class="" slot="start" src="assets/attach_file.svg"></ion-icon>
               {{f.name}}
             </a>
