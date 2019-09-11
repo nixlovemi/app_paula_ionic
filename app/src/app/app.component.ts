@@ -77,7 +77,6 @@ export class AppComponent {
 
     // menu staff
     this.appPages = [];
-    console.log('MENU', GrupoLogado);
 
     var retStaff = await this.tbGrupoPessoa.pegaGrupoStaff(GrupoLogado);
     if(!retStaff["erro"]){
@@ -129,7 +128,7 @@ export class AppComponent {
 
       var menuItem2 = {
         title: 'Privadas',
-        url: '/home',
+        url: '/home/priv',
         icon: 'assets/visibility_off.svg',
         img: '',
       };

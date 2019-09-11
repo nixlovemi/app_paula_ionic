@@ -96,11 +96,14 @@ export class HomePage {
         this.txtTitulo = 'Postagens - Favoritos';
       } else if(this.grpId == 'prog'){
         this.txtTitulo = 'Postagens - Programadas';
+      } else if(this.grpId == 'priv'){
+        this.txtTitulo = 'Postagens - Privadas';
       }
 
       var apenas_favoritos  = (this.grpId == 'fav');
       var apenas_programado = (this.grpId == 'prog');
-      var retTimeline       = await this.TbGrupoTimelineSrv.pegaPostagensGrupo(gruIdLogado, grpLogado, this.grpId, apenas_favoritos, apenas_programado);
+      var apenas_privada    = (this.grpId == 'priv');
+      var retTimeline       = await this.TbGrupoTimelineSrv.pegaPostagensGrupo(gruIdLogado, grpLogado, this.grpId, apenas_favoritos, apenas_programado, apenas_privada);
       await this.carregaTimeline(retTimeline);
     }
   }

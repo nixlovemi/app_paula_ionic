@@ -299,7 +299,6 @@ export class UtilsService {
 
       this.storage.set('gruId', gruId)
       .then((ret) => {
-        console.log('SETA GRU LOGADO', gruId);
         objRet.gruId = gruId;
         resolve(objRet);
       })
