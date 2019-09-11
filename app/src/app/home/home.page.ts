@@ -9,6 +9,7 @@ import { StreamingMedia, StreamingVideoOptions } from '@ionic-native/streaming-m
 import { UtilsService } from '../utils.service';
 import { Router, ActivatedRoute } from  "@angular/router";
 import { TbGrupoTimelineService } from  "../TbGrupoTimeline/tb-grupo-timeline.service";
+import { TbGrupoPessoaService } from  "../TbGrupoPessoa/tb-grupo-pessoa.service";
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import * as moment from 'moment';
 
@@ -18,105 +19,13 @@ import * as moment from 'moment';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  arrLoop = [
-    /*{
-      titulo: "Teste 1",
-      data: "28/08/19 08:15",
-      autor: "Leandro Parra",
-      imagens: [
-        {idx:1, url:"paisagem1.jpg", last:false}
-        ,
-        {idx:2, url:"paisagem2.jpg", last:false}
-        ,
-        {idx:3, url:"paisagem3.jpg", last:false}
-        ,
-        {idx:4, url:"paisagem1.jpg", last:true}
-        ,
-        {idx:5, url:"paisagem2.jpg", last:false}
-        ,
-        {idx:6, url:"paisagem3.jpg", last:false}
-        ,
-        {idx:7, url:"paisagem1.jpg", last:false}
-        ,
-        {idx:8, url:"paisagem2.jpg", last:false}
-      ],
-      youtube: [],
-      arquivos:[],
-      videos:[],
-      audios:[]
-    }
-    ,
-    {
-      titulo: "Teste 2",
-      data: "28/08/19 09:15",
-      autor: "Leandro Parra",
-      imagens: [
-        {idx:1, url:"paisagem1.jpg", last:false}
-      ],
-      youtube:[],
-      arquivos:[],
-      videos:[],
-      audios:[]
-    }
-    ,
-    {
-      titulo: "Teste 3",
-      data: "28/08/19 10:15",
-      autor: "Leandro Parra",
-      imagens: [],
-      youtube:[
-        {id: "qpT5Md4TPJg"}
-      ],
-      arquivos:[],
-      videos:[],
-      audios:[]
-    }
-    ,
-    {
-      titulo: "Teste 4",
-      data: "28/08/19 11:15",
-      autor: "Leandro Parra",
-      imagens: [],
-      youtube:[],
-      arquivos:[
-        {name:"pdf-test.pdf", path:"www/assets/pdf-test.pdf", type:"application/pdf"},
-        {name:"pdf-test.pdf", path:"www/assets/pdf-test.pdf", type:"application/pdf"}
-      ],
-      videos:[],
-      audios:[]
-    }
-    ,
-    {
-      titulo: "Teste 5",
-      data: "28/08/19 12:15",
-      autor: "Leandro Parra",
-      imagens: [],
-      youtube:[],
-      arquivos:[],
-      videos:[
-        {path:"www/assets/file_example.mp4"},
-        // {path:"www/assets/file_example.avi"} @todo AINDA N FUNFA
-      ],
-      audios:[]
-    }
-    ,
-    {
-      titulo: "Teste 6",
-      data: "28/08/19 13:15",
-      autor: "Leandro Parra",
-      imagens: [],
-      youtube:[],
-      arquivos:[],
-      videos:[],
-      audios:[
-        {path:"www/assets/BARBAREX.mp3"}
-      ]
-    }*/
-  ];
-  grpId = 0; //param da URL
+  arrLoop = [];
+  grpId; //param da URL
 
   Usuario = {};
   fotoLogado = '';
+  txtTitulo = '';
+  exibeNovoPost = true;
 
   constructor(
     private actionSheetController: ActionSheetController,
@@ -129,13 +38,24 @@ export class HomePage {
     private router: Router,
     private actRoute: ActivatedRoute,
     private TbGrupoTimelineSrv: TbGrupoTimelineService,
+    private TbGrupoPessoa: TbGrupoPessoaService,
     private iab: InAppBrowser,
   ) {}
 
   async ngOnInit()
   {
+    let sessionOk = await this.utilsSrv.validaSession();
+    if(!sessionOk){
+      this.utilsSrv.showAlert('Aviso!', '', 'Houve um problema na sua sessão. Faça o login novamente!', ['OK']);
+      this.router.navigate(['']);
+    }
+
     await this.actRoute.params.subscribe((res) => {
-      this.grpId = res.grp_id; //vem undefined qdo n tem param
+      if(typeof res.grp_id != 'undefined'){
+        this.grpId = res.grp_id; //vem undefined qdo n tem param | tento deixar 0 default | pode vir texto
+      } else {
+        this.grpId = 0;
+      }
     });
 
     var retUsuario = await this.utilsSrv.getUsuario();
@@ -148,23 +68,40 @@ export class HomePage {
     }
   }
 
+  async ionViewDidEnter()
+  {
+
+  }
+
   async ionViewWillEnter()
   {
-    let sessionOk = await this.utilsSrv.validaSession();
-    if(!sessionOk){
-      this.utilsSrv.showAlert('Aviso!', '', 'Houve um problema na sua sessão. Faça o login novamente!', ['OK']);
-      this.router.navigate(['']);
-    } else {
-      var retGruLogado = await this.utilsSrv.getGruIdLogado();
-      if(!retGruLogado["erro"]){
-        var gruIdLogado = retGruLogado["gruId"];
+    var retGruLogado = await this.utilsSrv.getGruIdLogado();
+    if(!retGruLogado["erro"]){
+      var gruIdLogado   = retGruLogado["gruId"];
+      let retGrpLogado  = await this.utilsSrv.getGrpIdLogado();
+      var grpLogado     = retGrpLogado["grpId"];
+      var GrupoLogado   = await this.utilsSrv.getGrupoLogado();
+      var retUsuLogado  = await this.utilsSrv.getUsuario();
+      var UsuarioLogado = retUsuLogado["Usuario"];
 
-        let retGrpLogado = await this.utilsSrv.getGrpIdLogado();
-        var grpLogado    = retGrpLogado["grpId"];
+      this.exibeNovoPost = (this.grpId == 0 && UsuarioLogado["cliente"] == 1) || (this.grpId == grpLogado);
 
-        var retTimeline = await this.TbGrupoTimelineSrv.pegaPostagensGrupo(gruIdLogado, grpLogado);
-        await this.carregaTimeline(retTimeline);
+      if(this.grpId == 0){
+        this.txtTitulo = 'Postagens - ' + GrupoLogado["gru_descricao"];
+      } else if(this.grpId > 0){
+        var retGrupoPessoa = await this.TbGrupoPessoa.pegaGrupoPessoa(this.grpId);
+        var GrupoPessoa    = retGrupoPessoa["GrupoPessoa"];
+        this.txtTitulo = 'Postagens - ' + GrupoPessoa["pes_nome"];
+      } else if(this.grpId == 'fav'){
+        this.txtTitulo = 'Postagens - Favoritos';
+      } else if(this.grpId == 'prog'){
+        this.txtTitulo = 'Postagens - Programadas';
       }
+
+      var apenas_favoritos  = (this.grpId == 'fav');
+      var apenas_programado = (this.grpId == 'prog');
+      var retTimeline       = await this.TbGrupoTimelineSrv.pegaPostagensGrupo(gruIdLogado, grpLogado, this.grpId, apenas_favoritos, apenas_programado);
+      await this.carregaTimeline(retTimeline);
     }
   }
 

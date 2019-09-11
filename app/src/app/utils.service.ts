@@ -49,9 +49,6 @@ export class UtilsService {
 
     var usuarioOk = (pesId == Usuario['id']);
     if(usuarioOk){
-      await this.setPesIdLogado(pesId);
-      await this.setGruIdLogado(gruId);
-
       return true;
     } else {
       await this.limpaSession();
@@ -63,9 +60,27 @@ export class UtilsService {
   {
     await this.clearUsuario();
     await this.clearGrupos();
-    await this.clearGrupos();
+    await this.clearGrpIdLogado();
     await this.clearGruIdLogado();
     await this.clearPesIdLogado();
+  }
+
+  async gravaInfoLogin(vGrpId, vUsuario, vGrupos)
+  {
+    await this.setGrpIdLogado(vGrpId);
+    await this.setUsuario(vUsuario);
+    await this.setGrupos(vGrupos);
+    await this.setPesIdLogado(vUsuario["id"]);
+
+    for(let idxGrupo in vGrupos){
+      var Grupo = vGrupos[idxGrupo];
+      if(vGrpId == Grupo["grp_id"]){
+        await this.setGruIdLogado(Grupo["grp_gru_id"]);
+        break;
+      }
+    }
+
+    return true;
   }
 
   setUsuario(Usuario)
@@ -284,6 +299,7 @@ export class UtilsService {
 
       this.storage.set('gruId', gruId)
       .then((ret) => {
+        console.log('SETA GRU LOGADO', gruId);
         objRet.gruId = gruId;
         resolve(objRet);
       })
@@ -406,6 +422,25 @@ export class UtilsService {
         reject(objRet);
       });
     });
+  }
+
+  async getGrupoLogado()
+  {
+    var retGrupos   = await this.getGrupos();
+    var GrupoLogado = {};
+    if( !retGrupos["erro"] ){
+      var Grupos       = retGrupos["Grupos"];
+      var retGruLogado = await this.getGruIdLogado();
+      var gruLogado    = retGruLogado["gruId"];
+
+      for(let idx in Grupos){
+        var Grupo = Grupos[idx];
+        if(gruLogado == Grupo["grp_gru_id"]){
+          return Grupo;
+          break;
+        }
+      }
+    }
   }
   /* ======= */
 

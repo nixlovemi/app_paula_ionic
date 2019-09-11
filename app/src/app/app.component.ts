@@ -69,10 +69,17 @@ export class AppComponent {
       this.infoUsuario.foto  = this.utilsSrv.getWebsiteUrl() + Usuario['foto'];
     }
 
+    var retGruLogado = await this.utilsSrv.getGruIdLogado();
+    var GrupoLogado  = retGruLogado["gruId"];
+
+    var retGrpLogado = await this.utilsSrv.getGrpIdLogado();
+    var grpLogado    = retGrpLogado["grpId"];
+
     // menu staff
     this.appPages = [];
+    console.log('MENU', GrupoLogado);
 
-    var retStaff = await this.tbGrupoPessoa.pegaGrupoStaff(1);
+    var retStaff = await this.tbGrupoPessoa.pegaGrupoStaff(GrupoLogado);
     if(!retStaff["erro"]){
       for(let idx in retStaff["Staff"]){
         var Staff    = retStaff["Staff"][idx];
@@ -105,7 +112,7 @@ export class AppComponent {
 
     var menuItem2 = {
       title: 'Minhas Postagens',
-      url: '/home',
+      url: '/home/' + grpLogado,
       icon: 'assets/accessibility.svg',
       img: '',
     };
@@ -114,7 +121,7 @@ export class AppComponent {
     if(Usuario['cliente'] == 0){
       var menuItem2 = {
         title: 'Programadas',
-        url: '/home',
+        url: '/home/prog',
         icon: 'assets/alarm.svg',
         img: '',
       };
@@ -131,7 +138,7 @@ export class AppComponent {
 
     var menuItem2 = {
       title: 'Favoritas',
-      url: '/home',
+      url: '/home/fav',
       icon: 'assets/favorite.svg',
       img: '',
     };

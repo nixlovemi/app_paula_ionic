@@ -48,12 +48,13 @@ export class PgLoginPage implements OnInit {
     if(erro == true){
       this.utilsSrv.showAlert('Aviso!', '', msg, ['OK']);
     } else {
-      await this.utilsSrv.setUsuario(retorno['Usuario']);
-      await this.utilsSrv.setGrupos(retorno['Grupos']);
-      await this.utilsSrv.setGrpIdLogado(retorno['Grupos'][0].grp_id);
-      await this.events.publish('carregarMenuInfo');
+      var vGrpId   = retorno['Grupos'][0].grp_id;
+      var vUsuario = retorno['Usuario'];
+      var vGrupos  = retorno['Grupos'];
 
-      this.router.navigate(['/home']);
+      await this.utilsSrv.gravaInfoLogin(vGrpId, vUsuario, vGrupos);
+      await this.router.navigate(['/home']);
+      await this.events.publish('carregarMenuInfo');
     }
     // ===================================
   }

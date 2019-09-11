@@ -10,7 +10,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-card class="card-new card-white">
+  <ion-card *ngIf="exibeNovoPost" class="card-new card-white">
     <ion-card-header>
       <div class="title">
         Nova Postagem
@@ -58,7 +58,7 @@
   </ion-card>
 
   <div padding>
-    <p class="ion-no-padding ion-no-margin">Postagens - Grupo VML1</p>
+    <p class="ion-no-padding ion-no-margin">{{txtTitulo}}</p>
   </div>
 
   <ion-card *ngFor="let i of arrLoop" class="card-new card-white card-postagens">
