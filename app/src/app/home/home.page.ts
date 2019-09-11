@@ -162,25 +162,7 @@ export class HomePage {
       }
 
       // respostas
-      var arrComentarios = [];
-      for(let grtIdComent in Comentarios){
-        if(grtIdComent == grtId){
-          for(let idxComentario in Comentarios[grtIdComent]){
-            var comentario = Comentarios[grtIdComent][idxComentario];
-            var fotoComent = this.utilsSrv.getPathImgPadrao();
-            if(comentario["pes_foto"] != "" && comentario["pes_foto"] != null){
-              fotoComent = this.utilsSrv.getWebsiteUrl() + comentario["pes_foto"];
-            }
-
-            var item2 = {
-              nome: comentario["pes_nome"],
-              comentario: comentario["grt_texto"],
-              foto: fotoComent,
-            };
-            arrComentarios.push(item2);
-          }
-        }
-      }
+      var arrComentarios = this.geraArrComentarios(Comentarios, grtId);
       // =========
 
       // anexos
@@ -260,6 +242,7 @@ export class HomePage {
       // ======
 
       var item = {
+        grtId : grtId,
         titulo: Postagem["grt_titulo"],
         data: moment(Postagem["dt_postagem"]).format("DD/MM HH:mm"),
         autor: Postagem["pes_nome"],
@@ -408,5 +391,84 @@ export class HomePage {
       }
     };
     this.streamingMedia.playAudio(vPath, options);
+  }
+
+  // comentarios
+  geraArrComentarios(Comentarios, grtId)
+  {
+    var arrComentario = [];
+    for(let grtIdComent in Comentarios){
+      if(grtIdComent == grtId){
+        for(let idxComentario in Comentarios[grtIdComent]){
+          var comentario = Comentarios[grtIdComent][idxComentario];
+          var fotoComent = this.utilsSrv.getPathImgPadrao();
+          if(comentario["pes_foto"] != "" && comentario["pes_foto"] != null){
+            fotoComent = this.utilsSrv.getWebsiteUrl() + comentario["pes_foto"];
+          }
+
+          var item2 = {
+            nome: comentario["pes_nome"],
+            comentario: comentario["grt_texto"],
+            foto: fotoComent,
+          };
+          arrComentario.push(item2);
+        }
+      }
+    }
+
+    return arrComentario;
+  }
+
+  geraArrComentarioResp(Comentarios, grtId)
+  {
+    var arrComentario = [];
+    for(let grtIdComent in Comentarios){
+      var respId = Comentarios[grtIdComent]["grt_resposta_id"];
+      if(respId == grtId){
+        var comentario = Comentarios[grtIdComent];
+        var fotoComent = this.utilsSrv.getPathImgPadrao();
+        if(comentario["pes_foto"] != "" && comentario["pes_foto"] != null){
+          fotoComent = this.utilsSrv.getWebsiteUrl() + comentario["pes_foto"];
+        }
+
+        var item2 = {
+          nome: comentario["pes_nome"],
+          comentario: comentario["grt_texto"],
+          foto: fotoComent,
+        };
+        arrComentario.push(item2);
+      }
+    }
+
+    return arrComentario;
+  }
+  // ===========
+
+  async salvaComentario(grtId, event)
+  {
+    await this.utilsSrv.getLoader('Salvando ...', 'dots');
+
+    var comentario   = document.getElementById('txt-comentario-' + grtId).value;
+    var retGrpLogado = await this.utilsSrv.getGrpIdLogado();
+    var grpLogado    = retGrpLogado["grpId"];
+
+    var retSalvaCom  = await this.TbGrupoTimelineSrv.salvaComentario(grtId, grpLogado, comentario.replace(/\n$/, ""));
+    if(retSalvaCom["erro"]){
+      this.utilsSrv.showAlert('Aviso', '', retSalvaCom["msg"], ['OK']);
+    } else {
+      // atualiza comentario da Postagem
+      document.getElementById('txt-comentario-' + grtId).value = '';
+      var Comentarios = retSalvaCom["Comentarios"];
+
+      for(let idx in this.arrLoop){
+        var postGrtId  = this.arrLoop[idx]["grtId"];
+        if(postGrtId == grtId){
+          this.arrLoop[idx]["comentarios"] = this.geraArrComentarioResp(Comentarios, grtId);
+        }
+      }
+      // ===============================
+    }
+
+    await this.utilsSrv.closeLoader();
   }
 }

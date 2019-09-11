@@ -80,4 +80,45 @@ export class TbGrupoTimelineService {
       });
     });
   }
+
+  salvaComentario(grtId, grpId, comentario)
+  {
+    return new Promise(
+    (resolve, reject) => {
+      //@todo ver em tds as chamadas HTTP um jeito de pegar qdo der erro no server e/ou n tiver NET
+      let url      = this.wsPath + 'salvaComentario'
+      let postData = {
+        'appkey'     : this.appKey,
+        'grt_id'     : grtId,
+        'grp_id'     : grpId,
+        'comentario' : comentario,
+      };
+
+      let objRet = {
+        msg: '',
+        erro: false,
+        Comentarios: {},
+      };
+
+      this.http.post(url, postData)
+      .subscribe((result: any) => {
+        let jsonRet = result.json();
+
+        objRet.msg         = jsonRet.msg;
+        objRet.erro        = jsonRet.erro;
+        objRet.Comentarios = jsonRet.Comentarios;
+
+        resolve(objRet);
+      },
+      (error) => {
+        // {"_body":{"isTrusted":true},"status":0,"ok":false,"statusText":"","headers":{},"type":3,"url":null}
+        // reject(error.json());
+        objRet.erro       = true;
+        objRet.httpStatus = error;
+        objRet.msg        = 'Erro ao comunicar com o servidor';
+
+        reject(objRet);
+      });
+    });
+  }
 }
