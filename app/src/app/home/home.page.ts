@@ -121,6 +121,13 @@ export class HomePage {
     }
   }
 
+  async refreshConteudo(event)
+  {
+    this.arrLoop = [];
+    await this.ionViewWillEnter();
+    event.target.complete();
+  }
+
   async carregaTimeline(retTimeline)
   {
     await this.utilsSrv.getLoader('Carregando', 'Dots');
