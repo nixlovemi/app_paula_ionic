@@ -166,11 +166,17 @@ ion-content{
   padding: 4px;
   margin-bottom: 0;
   margin-left: 8px;
+  position: relative;
 }
 .card-postagens .comments .comments-loop .comment-text span{
   font-weight: bold;
   color: #00bcd4;
   margin-right: 8px;
+}
+.card-postagens .comments .comments-loop .comment-text .deletar-comment{
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 .action-sheet-button-inner{
   --color: 999;

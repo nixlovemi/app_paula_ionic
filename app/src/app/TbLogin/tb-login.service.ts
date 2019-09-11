@@ -54,7 +54,7 @@ export class TbLoginService {
         objRet.httpStatus = error;
         objRet.msg        = 'Erro ao comunicar com o servidor';
 
-        reject(objRet);
+        resolve(objRet);
       });
     });
   }

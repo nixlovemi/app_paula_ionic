@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalController, ActionSheetController } from '@ionic/angular';
+import { ModalController, ActionSheetController, AlertController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { PgGaleriaImagemPage } from '../pg-galeria-imagem/pg-galeria-imagem.page';
@@ -26,6 +26,7 @@ export class HomePage {
   fotoLogado = '';
   txtTitulo = '';
   exibeNovoPost = true;
+  grpLogado;
 
   constructor(
     private actionSheetController: ActionSheetController,
@@ -40,6 +41,7 @@ export class HomePage {
     private TbGrupoTimelineSrv: TbGrupoTimelineService,
     private TbGrupoPessoa: TbGrupoPessoaService,
     private iab: InAppBrowser,
+    private alertCtr: AlertController,
   ) {}
 
   async ngOnInit()
@@ -66,6 +68,10 @@ export class HomePage {
         this.fotoLogado = this.utilsSrv.getWebsiteUrl() + this.Usuario["foto"];
       }
     }
+
+    let retGrpLogado  = await this.utilsSrv.getGrpIdLogado();
+    var grpLogado     = retGrpLogado["grpId"];
+    this.grpLogado    = grpLogado;
   }
 
   async ionViewDidEnter()
@@ -78,8 +84,7 @@ export class HomePage {
     var retGruLogado = await this.utilsSrv.getGruIdLogado();
     if(!retGruLogado["erro"]){
       var gruIdLogado   = retGruLogado["gruId"];
-      let retGrpLogado  = await this.utilsSrv.getGrpIdLogado();
-      var grpLogado     = retGrpLogado["grpId"];
+      var grpLogado     = this.grpLogado;
       var GrupoLogado   = await this.utilsSrv.getGrupoLogado();
       var retUsuLogado  = await this.utilsSrv.getUsuario();
       var UsuarioLogado = retUsuLogado["Usuario"];
@@ -90,8 +95,12 @@ export class HomePage {
         this.txtTitulo = 'Postagens - ' + GrupoLogado["gru_descricao"];
       } else if(this.grpId > 0){
         var retGrupoPessoa = await this.TbGrupoPessoa.pegaGrupoPessoa(this.grpId);
-        var GrupoPessoa    = retGrupoPessoa["GrupoPessoa"];
-        this.txtTitulo = 'Postagens - ' + GrupoPessoa["pes_nome"];
+        if(!retGrupoPessoa["erro"]){
+          var GrupoPessoa    = retGrupoPessoa["GrupoPessoa"];
+          this.txtTitulo = 'Postagens - ' + GrupoPessoa["pes_nome"];
+        } else {
+          this.txtTitulo = 'Postagens';
+        }
       } else if(this.grpId == 'fav'){
         this.txtTitulo = 'Postagens - Favoritos';
       } else if(this.grpId == 'prog'){
@@ -104,7 +113,11 @@ export class HomePage {
       var apenas_programado = (this.grpId == 'prog');
       var apenas_privada    = (this.grpId == 'priv');
       var retTimeline       = await this.TbGrupoTimelineSrv.pegaPostagensGrupo(gruIdLogado, grpLogado, this.grpId, apenas_favoritos, apenas_programado, apenas_privada);
-      await this.carregaTimeline(retTimeline);
+      if(retTimeline["erro"]){
+        this.utilsSrv.showAlert('Aviso!', '', retTimeline["msg"], ['OK']);
+      } else {
+        await this.carregaTimeline(retTimeline);
+      }
     }
   }
 
@@ -116,11 +129,7 @@ export class HomePage {
     let Salvos       = retTimeline["Salvos"];
     let Comentarios  = retTimeline["Respostas"];
     let Arquivos     = retTimeline["Arquivos"];
-    let retGrpLogado = await this.utilsSrv.getGrpIdLogado();
-    let grpLogado    = 0;
-    if(!retGrpLogado["erro"]){
-      grpLogado = retGrpLogado["grpId"];
-    }
+    let grpLogado    = this.grpLogado;
 
     for(let idx in Postagens){
       var Postagem     = Postagens[idx];
@@ -407,9 +416,11 @@ export class HomePage {
           }
 
           var item2 = {
+            id: comentario["grt_id"],
             nome: comentario["pes_nome"],
             comentario: comentario["grt_texto"],
             foto: fotoComent,
+            podeDeletar: (this.grpLogado == comentario["grp_id"]),
           };
           arrComentario.push(item2);
         }
@@ -432,9 +443,11 @@ export class HomePage {
         }
 
         var item2 = {
+          id: comentario["grt_id"],
           nome: comentario["pes_nome"],
           comentario: comentario["grt_texto"],
           foto: fotoComent,
+          podeDeletar: (this.grpLogado == comentario["grp_id"]),
         };
         arrComentario.push(item2);
       }
@@ -448,22 +461,67 @@ export class HomePage {
   {
     await this.utilsSrv.getLoader('Salvando ...', 'dots');
 
-    var comentario   = document.getElementById('txt-comentario-' + grtId).value;
-    var retGrpLogado = await this.utilsSrv.getGrpIdLogado();
-    var grpLogado    = retGrpLogado["grpId"];
+    var comentario = (<HTMLInputElement>document.getElementById('txt-comentario-' + grtId)).value;
+    var grpLogado  = this.grpLogado;
 
     var retSalvaCom  = await this.TbGrupoTimelineSrv.salvaComentario(grtId, grpLogado, comentario.replace(/\n$/, ""));
     if(retSalvaCom["erro"]){
       this.utilsSrv.showAlert('Aviso', '', retSalvaCom["msg"], ['OK']);
     } else {
       // atualiza comentario da Postagem
-      document.getElementById('txt-comentario-' + grtId).value = '';
+      (<HTMLInputElement>document.getElementById('txt-comentario-' + grtId)).value = '';
       var Comentarios = retSalvaCom["Comentarios"];
 
       for(let idx in this.arrLoop){
         var postGrtId  = this.arrLoop[idx]["grtId"];
         if(postGrtId == grtId){
           this.arrLoop[idx]["comentarios"] = this.geraArrComentarioResp(Comentarios, grtId);
+        }
+      }
+      // ===============================
+    }
+
+    await this.utilsSrv.closeLoader();
+  }
+
+  async deletaComentario(grtId, grtIdPai)
+  {
+    const alert = await this.alertCtr.create({
+      header: 'Excluir comentário!',
+      message: 'Deseja mesmo excluir esse comentário?',
+      buttons: [
+        {
+          text: 'Não ...',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => { }
+        }, {
+          text: 'Sim!',
+          handler: () => {
+            this.postDeletaComentario(grtId, grtIdPai);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async postDeletaComentario(grtId, grtIdPai)
+  {
+    await this.utilsSrv.getLoader('Processando ...', 'dots');
+
+    var retDeletaCom  = await this.TbGrupoTimelineSrv.deletaComentario(grtId, grtIdPai);
+    if(retDeletaCom["erro"]){
+      this.utilsSrv.showAlert('Aviso', '', retDeletaCom["msg"], ['OK']);
+    } else {
+      // atualiza comentario da Postagem
+      var Comentarios = retDeletaCom["Comentarios"];
+
+      for(let idx in this.arrLoop){
+        var postGrtId  = this.arrLoop[idx]["grtId"];
+        if(postGrtId == grtIdPai){
+          this.arrLoop[idx]["comentarios"] = this.geraArrComentarioResp(Comentarios, grtIdPai);
         }
       }
       // ===============================

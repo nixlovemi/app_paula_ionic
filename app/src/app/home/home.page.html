@@ -152,6 +152,8 @@
             <p class="comment-text">
               <span>{{c.nome}}:</span>
               {{c.comentario}}
+
+              <ion-icon *ngIf="c.podeDeletar" (click)="deletaComentario(c.id, i.grtId)" class="deletar-comment text-danger" slot="end" src="assets/delete.svg"></ion-icon>
             </p>
           </div>
         </div>
