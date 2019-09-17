@@ -230,7 +230,8 @@ export class HomePage {
               var videoid   = vidCaminho.match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/);
               if(videoid != null){
                 var itemVidYT = {
-                  id: videoid[1]
+                  id: videoid[1],
+                  urlSanitized: this.sanitizer.bypassSecurityTrustResourceUrl('https://www.youtube.com/embed/' + videoid[1]) // assim n fica dando reload td hora; se fizer na view, sim.
                 };
                 arrYoutube.push(itemVidYT);
               }
@@ -464,7 +465,7 @@ export class HomePage {
   }
   // ===========
 
-  async salvaComentario(grtId, event)
+  async salvaComentario(grtId)
   {
     await this.utilsSrv.getLoader('Salvando ...', 'dots');
 

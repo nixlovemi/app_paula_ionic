@@ -18,7 +18,17 @@
 }
 .comments .comments-inserir .dv-frente-img{
   margin-left: 10px;
-  width: calc(100% - 40px);
+  width: calc(100% - 63px);
+}
+.comments .comments-inserir .dv-btn-coment{
+  width: 16px;
+  display: inline-block;
+  margin-left: 7px;
+  position: relative;
+  top: -2px;
+}
+.comments .comments-inserir .dv-btn-coment ion-icon{
+  cursor: pointer;
 }
 .comments .comments-inserir .dv-frente-img ion-textarea{
   font-size: 13.5px;

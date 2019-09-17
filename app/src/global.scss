@@ -125,7 +125,7 @@ ion-content{
 }
 .card-postagens .autor{
   position: relative;
-  top: -3px;
+  top: 6px;
   font-size: 12px;
   color: #808080;
 }
@@ -167,11 +167,13 @@ ion-content{
   margin-bottom: 0;
   margin-left: 8px;
   position: relative;
+  white-space: pre-line;
 }
 .card-postagens .comments .comments-loop .comment-text span{
   font-weight: bold;
   color: #00bcd4;
   margin-right: 8px;
+  white-space: normal;
 }
 .card-postagens .comments .comments-loop .comment-text .deletar-comment{
   position: absolute;
