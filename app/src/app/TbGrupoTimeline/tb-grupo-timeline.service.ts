@@ -165,4 +165,45 @@ export class TbGrupoTimelineService {
       });
     });
   }
+
+  postNovoTimelineGrupo(vDescricao, vProgramar, vPublico, vGrpLogado)
+  {
+    return new Promise(
+    (resolve, reject) => {
+      //@todo ver em tds as chamadas HTTP um jeito de pegar qdo der erro no server e/ou n tiver NET
+      let url      = this.wsPath + 'postNovoTimelineGrupo'
+      let postData = {
+        'appkey'    : this.appKey,
+        'descricao' : vDescricao,
+        'programar' : vProgramar,
+        'publico'   : vPublico,
+        'grpLogado' : vGrpLogado,
+      };
+
+      let objRet = {
+        msg: '',
+        erro: false,
+        httpStatus: {},
+      };
+
+      this.http.post(url, postData)
+      .subscribe((result: any) => {
+        let jsonRet = result.json();
+
+        objRet.msg       = jsonRet.msg;
+        objRet.erro      = jsonRet.erro;
+
+        resolve(objRet);
+      },
+      (error) => {
+        // {"_body":{"isTrusted":true},"status":0,"ok":false,"statusText":"","headers":{},"type":3,"url":null}
+        // reject(error.json());
+        objRet.erro       = true;
+        objRet.httpStatus = error;
+        objRet.msg        = 'Erro ao comunicar com o servidor';
+
+        resolve(objRet);
+      });
+    });
+  }
 }

@@ -21,16 +21,18 @@ import 'moment-timezone';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
+  infoPostar = {};
   arrLoop = [];
   grpId; //param da URL
 
-  Usuario = {};
-  fotoLogado = '';
-  txtTitulo = '';
-  exibeNovoPost = true;
-  grpLogado;
+  Usuario          = {};
+  fotoLogado       = '';
+  txtTitulo        = '';
+  exibeNovoPost    = true;
   exibeCarregaMais = false;
-  ultPostParams = {};
+  exibeProgramar   = false;
+  ultPostParams    = {};
+  grpLogado;
 
   constructor(
     private actionSheetController: ActionSheetController,
@@ -50,6 +52,7 @@ export class HomePage {
 
   async ngOnInit()
   {
+    this.limpaFormPublicar();
     let sessionOk = await this.utilsSrv.validaSession();
     if(!sessionOk){
       this.utilsSrv.showAlert('Aviso!', '', 'Houve um problema na sua sessão. Faça o login novamente!', ['OK']);
@@ -93,7 +96,8 @@ export class HomePage {
       var retUsuLogado  = await this.utilsSrv.getUsuario();
       var UsuarioLogado = retUsuLogado["Usuario"];
 
-      this.exibeNovoPost = (this.grpId == 0 && UsuarioLogado["cliente"] == 1) || (this.grpId == grpLogado);
+      this.exibeNovoPost  = (this.grpId == 0 && UsuarioLogado["cliente"] == 1) || (this.grpId == grpLogado);
+      this.exibeProgramar = UsuarioLogado["cliente"] != 1;
 
       if(this.grpId == 0){
         this.txtTitulo = 'Postagens - ' + GrupoLogado["gru_descricao"];
@@ -120,9 +124,9 @@ export class HomePage {
       if(retTimeline["erro"]){
         this.utilsSrv.showAlert('Aviso!', '', retTimeline["msg"], ['OK']);
       } else {
-        var retTimeline = await this.carregaTimeline(retTimeline);
-        for(let idx in retTimeline){
-          this.arrLoop.push(retTimeline[idx]);
+        var retTimeline2 = await this.carregaTimeline(retTimeline);
+        for(let idx in retTimeline2){
+          this.arrLoop.push(retTimeline2[idx]);
         }
       }
     }
@@ -150,9 +154,9 @@ export class HomePage {
     if(retTimeline["erro"]){
       this.utilsSrv.showAlert('Aviso!', '', retTimeline["msg"], ['OK']);
     } else {
-      var retTimeline = await this.carregaTimeline(retTimeline);
-      for(let idx in retTimeline){
-        this.arrLoop.push(retTimeline[idx]);
+      var retTimeline2 = await this.carregaTimeline(retTimeline);
+      for(let idx in retTimeline2){
+        this.arrLoop.push(retTimeline2[idx]);
       }
     }
   }
@@ -314,6 +318,31 @@ export class HomePage {
 
     await this.utilsSrv.closeLoader();
     return itensPostagens;
+  }
+
+  limpaFormPublicar()
+  {
+    this.infoPostar = {
+      texto:'',
+      programar:'',
+      publico: true,
+      anexos: [],
+    };
+  }
+
+  async postPublicar()
+  {
+    await this.utilsSrv.getLoader('Postando ...', 'dots');
+    var retPostagem = await this.TbGrupoTimelineSrv.postNovoTimelineGrupo(this.infoPostar.texto, this.infoPostar.programar, this.infoPostar.publico, this.grpLogado);
+    await this.utilsSrv.closeLoader();
+
+    if(retPostagem["erro"]){
+      this.utilsSrv.showAlert('Aviso!', '', retPostagem["msg"], ['OK']);
+    } else {
+      this.limpaFormPublicar();
+      this.arrLoop = [];
+      await this.ionViewWillEnter();
+    }
   }
 
   async asUploadOptions()
