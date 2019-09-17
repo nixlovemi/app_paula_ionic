@@ -168,4 +168,13 @@
       </div>
     </ion-card-content>
   </ion-card>
+
+  <ion-row *ngIf="exibeCarregaMais" class="ion-align-items-center">
+    <ion-col size="12" style="text-align: center;">
+      <ion-button (click)="carregaMais()" class="buttom-blue center-item">
+        <ion-icon slot="start" src="assets/autorenew.svg"></ion-icon>
+        Carregar Mais
+      </ion-button>
+    </ion-col>
+  </ion-row>
 </ion-content>

@@ -22,7 +22,7 @@ export class TbGrupoTimelineService {
     });
   }
 
-  pegaPostagensGrupo(gru_id, grp_logado, grp_postagem=0, apenas_favoritos=false, apenas_programados=false, apenas_privado=false)
+  pegaPostagensGrupo(gru_id, grp_logado, grp_postagem=0, apenas_favoritos=false, apenas_programados=false, apenas_privado=false, limit=25, offset=0)
   {
     return new Promise(
     (resolve, reject) => {
@@ -42,6 +42,8 @@ export class TbGrupoTimelineService {
         'apenas_favoritos'  : apenas_favoritos,
         'apenas_programado' : apenas_programados,
         'apenas_privado'    : apenas_privado,
+        'limit'             : limit,
+        'offset'            : offset,
       };
 
       let objRet = {

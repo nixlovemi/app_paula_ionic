@@ -12,6 +12,8 @@ import { TbGrupoTimelineService } from  "../TbGrupoTimeline/tb-grupo-timeline.se
 import { TbGrupoPessoaService } from  "../TbGrupoPessoa/tb-grupo-pessoa.service";
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import * as moment from 'moment';
+import 'moment-timezone';
+//import * as momentTz from 'moment-timezone';
 
 @Component({
   selector: 'app-home',
@@ -27,6 +29,8 @@ export class HomePage {
   txtTitulo = '';
   exibeNovoPost = true;
   grpLogado;
+  exibeCarregaMais = false;
+  ultPostParams = {};
 
   constructor(
     private actionSheetController: ActionSheetController,
@@ -116,7 +120,10 @@ export class HomePage {
       if(retTimeline["erro"]){
         this.utilsSrv.showAlert('Aviso!', '', retTimeline["msg"], ['OK']);
       } else {
-        await this.carregaTimeline(retTimeline);
+        var retTimeline = await this.carregaTimeline(retTimeline);
+        for(let idx in retTimeline){
+          this.arrLoop.push(retTimeline[idx]);
+        }
       }
     }
   }
@@ -128,9 +135,35 @@ export class HomePage {
     event.target.complete();
   }
 
+  async carregaMais()
+  {
+    var gruId      = this.ultPostParams["gru_id"];
+    var grpLogado  = this.grpLogado;
+    var grpId      = this.ultPostParams["grp_id"];
+    var apenasFav  = this.ultPostParams["apenas_favoritos"];
+    var apenasProg = this.ultPostParams["apenas_programado"];
+    var apenasPriv = this.ultPostParams["apenas_privado"];
+    var limit      = this.ultPostParams["limit"];
+    var offset     = this.ultPostParams["offset"] + limit;
+
+    var retTimeline       = await this.TbGrupoTimelineSrv.pegaPostagensGrupo(gruId, grpLogado, grpId, apenasFav, apenasProg, apenasPriv, limit, offset);
+    if(retTimeline["erro"]){
+      this.utilsSrv.showAlert('Aviso!', '', retTimeline["msg"], ['OK']);
+    } else {
+      var retTimeline = await this.carregaTimeline(retTimeline);
+      for(let idx in retTimeline){
+        this.arrLoop.push(retTimeline[idx]);
+      }
+    }
+  }
+
   async carregaTimeline(retTimeline)
   {
+    let itensPostagens = [];
+
     await this.utilsSrv.getLoader('Carregando', 'Dots');
+    this.exibeCarregaMais =  Object.keys(retTimeline["Postagens"]).length > 0;
+    this.ultPostParams    = retTimeline["arrParam"];
 
     let Postagens    = retTimeline["Postagens"];
     let Salvos       = retTimeline["Salvos"];
@@ -261,7 +294,7 @@ export class HomePage {
       var item = {
         grtId : grtId,
         titulo: Postagem["grt_titulo"],
-        data: moment(Postagem["dt_postagem"]).format("DD/MM HH:mm"),
+        data: moment(Postagem["dt_postagem"]).tz("America/Sao_Paulo").format("DD/MM HH:mm"),
         autor: Postagem["pes_nome"],
         texto: Postagem["grt_texto"],
         foto: foto,
@@ -276,10 +309,11 @@ export class HomePage {
         audios:arrAudios,
         comentarios:arrComentarios,
       };
-      this.arrLoop.push(item);
+      itensPostagens.push(item);
     }
 
     await this.utilsSrv.closeLoader();
+    return itensPostagens;
   }
 
   async asUploadOptions()
