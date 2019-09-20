@@ -459,7 +459,7 @@ export class HomePage {
           text: 'Avaliar Postagem',
           icon: 'assets/assignment.svg',
           handler: () => {
-            console.log('avaliar');
+            this.opcAvaliarPostagem(grtId);
           }
         }
       );
@@ -477,11 +477,127 @@ export class HomePage {
       );
     }
 
+    vButtons.push(
+      {
+        text: 'Cancelar',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => {
+
+        }
+      }
+    );
     const actionSheet = await this.actionSheetController.create({
       header: 'Opções - Postagem',
       buttons: vButtons
     });
     await actionSheet.present();
+  }
+
+  async opcAvaliarPostagem(grtId)
+  {
+    let avaliacaoN;
+    let avaliacaoP;
+
+    for(let idx in this.arrLoop){
+      var postGrtId = this.arrLoop[idx]["grtId"];
+      if(postGrtId == grtId){
+        avaliacaoN = this.arrLoop[idx]["avaliacaoN"];
+        avaliacaoP = this.arrLoop[idx]["avaliacaoP"];
+        break;
+      }
+    }
+
+    let txtAvaliacaoN = '';
+    if(avaliacaoN){
+      txtAvaliacaoN = ' (X)';
+    }
+
+    let txtAvaliacaoP = '';
+    if(avaliacaoP){
+      txtAvaliacaoP = ' (X)';
+    }
+
+    let vButtons = [];
+    vButtons.push(
+      {
+        text: 'Avaliar Positivamente' + txtAvaliacaoP,
+        // icon: 'assets/favorite.svg',
+        handler: () => {
+          this.postAvaliarPostagem(grtId, '1');
+        }
+      }
+    );
+    vButtons.push(
+      {
+        text: 'Avaliar Negativamente' + txtAvaliacaoN,
+        // icon: 'assets/favorite.svg',
+        handler: () => {
+          this.postAvaliarPostagem(grtId, '0');
+        }
+      }
+    );
+
+    if(avaliacaoP || avaliacaoN){
+      vButtons.push(
+        {
+          text: 'Remover Avaliação',
+          // icon: 'assets/favorite.svg',
+          handler: () => {
+            this.postAvaliarPostagem(grtId, null);
+          }
+        }
+      );
+    }
+
+    vButtons.push(
+      {
+        text: 'Cancelar',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => {
+
+        }
+      }
+    );
+
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Avaliação da Postagem',
+      buttons: vButtons
+    });
+    await actionSheet.present();
+  }
+
+  async postAvaliarPostagem(grtId, avaliacao)
+  {
+    await this.utilsSrv.getLoader('Processando ...', 'dots');
+
+    var retAvalPostagem  = await this.TbGrupoTimelineSrv.avaliarPostagem(grtId, avaliacao);
+    console.log(retAvalPostagem);
+    if(retAvalPostagem["erro"]){
+      this.utilsSrv.showAlert('Aviso', '', retAvalPostagem["msg"], ['OK']);
+    } else {
+      let avaliacaoP = false;
+      let avaliacaoN = false;
+
+      for(let idx in this.arrLoop){
+        var postGrtId = this.arrLoop[idx]["grtId"];
+        if(postGrtId == grtId){
+          if(retAvalPostagem["avaliacao"] == 0){
+            avaliacaoN = true;
+          } else if(retAvalPostagem["avaliacao"] == 1){
+            avaliacaoP = true;
+          }
+
+          this.arrLoop[idx]["avaliacaoN"] = avaliacaoN;
+          this.arrLoop[idx]["avaliacaoP"] = avaliacaoP;
+          break;
+        }
+      }
+      // ===============================
+    }
+
+    await this.utilsSrv.closeLoader();
   }
 
   async opcFavoritarPostagem(grtId)
