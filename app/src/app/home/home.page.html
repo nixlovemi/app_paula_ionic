@@ -73,113 +73,115 @@
     <p class="ion-no-padding ion-no-margin">{{txtTitulo}}</p>
   </div>
 
-  <ion-card *ngFor="let i of arrLoop" class="card-new card-white card-postagens">
-    <ion-card-content>
-      <div style="position:absolute; right:0; top:0;">
-        <ion-button (click)="asPostagemOptions()" class="botao-mais-opcao" fill="clear" size="small" slot="icon-only">
-          <ion-icon class="icone-mais-opcao" slot="end" src="assets/more_horiz.svg"></ion-icon>
-        </ion-button>
-      </div>
-
-      <div class="info-top">
-        <div style="margin-right:10px;" class="ion-float-left profile-photo-small">
-          <img [src]="i.foto" alt="Circle Image" class="rounded-circle img-fluid">
+  <ng-container *ngFor="let i of arrLoop">
+    <ion-card *ngIf="i.deletado == false" class="card-new card-white card-postagens">
+      <ion-card-content>
+        <div style="position:absolute; right:0; top:0;">
+          <ion-button (click)="asPostagemOptions(i.grpPost, i.grtId)" class="botao-mais-opcao" fill="clear" size="small" slot="icon-only">
+            <ion-icon class="icone-mais-opcao" slot="end" src="assets/more_horiz.svg"></ion-icon>
+          </ion-button>
         </div>
-        <div class="ion-float-left">
-          <span title="21/08/2019 11:08:03" class="autor">
-            {{i.autor}} | {{i.data}}
-          </span>
-          <br>
-          <span style="position:relative; top:0;">
-            <ion-icon *ngIf="i.privada" class="icone-privado" slot="start" src="assets/visibility_off.svg"></ion-icon>
-            <!--&nbsp;-->
-            <ion-icon *ngIf="i.avaliacaoP" class="icone-avaliacao text-success" slot="end" src="assets/thumb_up.svg"></ion-icon>
-            <ion-icon *ngIf="i.avaliacaoN" class="icone-avaliacao text-danger" slot="end" src="assets/thumb_down.svg"></ion-icon>
-            <!--&nbsp;-->
-            <ion-icon *ngIf="i.favorito" class="icone-favorito text-success" slot="end" src="assets/favorite.svg"></ion-icon>
-          </span>
+
+        <div class="info-top">
+          <div style="margin-right:10px;" class="ion-float-left profile-photo-small">
+            <img [src]="i.foto" alt="Circle Image" class="rounded-circle img-fluid">
+          </div>
+          <div class="ion-float-left">
+            <span title="21/08/2019 11:08:03" class="autor">
+              {{i.autor}} | {{i.data}}
+            </span>
+            <br>
+            <span style="position:relative; top:0;">
+              <ion-icon *ngIf="i.privada" class="icone-privado" slot="start" src="assets/visibility_off.svg"></ion-icon>
+              <!--&nbsp;-->
+              <ion-icon *ngIf="i.avaliacaoP" class="icone-avaliacao text-success" slot="end" src="assets/thumb_up.svg"></ion-icon>
+              <ion-icon *ngIf="i.avaliacaoN" class="icone-avaliacao text-danger" slot="end" src="assets/thumb_down.svg"></ion-icon>
+              <!--&nbsp;-->
+              <ion-icon *ngIf="i.favorito" class="icone-favorito text-success" slot="end" src="assets/favorite.svg"></ion-icon>
+            </span>
+          </div>
         </div>
-      </div>
 
-      <div class="content">
-        {{i.texto}}
-      </div>
+        <div class="content">
+          {{i.texto}}
+        </div>
 
-      <div class="imagem-galeria" *ngIf="i.imagens.length >= 1">
-        <ion-grid>
-          <ion-row *ngIf="i.imagens.length == 1">
-            <ion-col size="12" *ngFor="let image of i.imagens">
-              <div (click)="modalGaleriaImg(i.imagens, image.idx)" class="image-container" [style.background-image]="'url(' + image.url + ')'"></div>
-            </ion-col>
-          </ion-row>
+        <div class="imagem-galeria" *ngIf="i.imagens.length >= 1">
+          <ion-grid>
+            <ion-row *ngIf="i.imagens.length == 1">
+              <ion-col size="12" *ngFor="let image of i.imagens">
+                <div (click)="modalGaleriaImg(i.imagens, image.idx)" class="image-container" [style.background-image]="'url(' + image.url + ')'"></div>
+              </ion-col>
+            </ion-row>
 
-          <ion-row *ngIf="i.imagens.length > 1">
-            <ion-col size="6" size-md="4" size-xl="3" *ngFor="let image of i.imagens">
-              <div (click)="modalGaleriaImg(i.imagens, image.idx)" *ngIf="image.idx <= 4" class="image-container" [style.background-image]="'url(' + image.url + ')'">
-                <div *ngIf="image.last && i.imagens.length > 4" class="texto-mais-img">
-                  Veja todas as imagens
+            <ion-row *ngIf="i.imagens.length > 1">
+              <ion-col size="6" size-md="4" size-xl="3" *ngFor="let image of i.imagens">
+                <div (click)="modalGaleriaImg(i.imagens, image.idx)" *ngIf="image.idx <= 4" class="image-container" [style.background-image]="'url(' + image.url + ')'">
+                  <div *ngIf="image.last && i.imagens.length > 4" class="texto-mais-img">
+                    Veja todas as imagens
+                  </div>
                 </div>
-              </div>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </div>
-
-      <div *ngIf="i.youtube.length>0" class="embed-container">
-        <iframe *ngFor="let y of i.youtube" [src]="y.urlSanitized" frameborder='0' allowfullscreen></iframe>
-      </div>
-      <div *ngIf="i.videos.length>0" class="videos-container">
-        <a style="margin-bottom:5px;" href="javascript:;" *ngFor="let v of i.videos" (click)="playVideo(v.path)">
-          <img src="assets/play-button.png" />
-        </a>
-      </div>
-
-      <div *ngIf="i.audios.length>0" class="audio-container">
-        <a style="margin-bottom:5px;" href="javascript:;" *ngFor="let a of i.audios" (click)="playAudio(a.path)">
-          <img src="assets/music-button.png" />
-        </a>
-      </div>
-
-      <div *ngIf="i.arquivos.length>0" class="arquivos-container">
-        <ul>
-          <li *ngFor="let f of i.arquivos">
-            <a href="javascript:;" (click)="openPdf(f.path)">
-              <ion-icon class="" slot="start" src="assets/attach_file.svg"></ion-icon>
-              {{f.name}}
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <div class="comments">
-        <div *ngFor="let c of i.comentarios" class="comments-loop">
-          <div class="dv-img">
-            <img [src]="c.foto" alt="Circle Image" class="profile-photo-small rounded-circle img-fluid img-comment">
-          </div>
-          <div class="dv-frente-img">
-            <p class="comment-text">
-              <span>{{c.nome}}:</span>
-              {{c.comentario}}
-
-              <ion-icon *ngIf="c.podeDeletar" (click)="deletaComentario(c.id, i.grtId)" class="deletar-comment text-danger" slot="end" src="assets/delete.svg"></ion-icon>
-            </p>
-          </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
         </div>
 
-        <div class="comments-inserir">
-          <div class="dv-img">
-            <img src="{{fotoLogado}}" alt="Circle Image" class="profile-photo-small rounded-circle img-fluid img-comment">
+        <div *ngIf="i.youtube.length>0" class="embed-container">
+          <iframe *ngFor="let y of i.youtube" [src]="y.urlSanitized" frameborder='0' allowfullscreen></iframe>
+        </div>
+        <div *ngIf="i.videos.length>0" class="videos-container">
+          <a style="margin-bottom:5px;" href="javascript:;" *ngFor="let v of i.videos" (click)="playVideo(v.path)">
+            <img src="assets/play-button.png" />
+          </a>
+        </div>
+
+        <div *ngIf="i.audios.length>0" class="audio-container">
+          <a style="margin-bottom:5px;" href="javascript:;" *ngFor="let a of i.audios" (click)="playAudio(a.path)">
+            <img src="assets/music-button.png" />
+          </a>
+        </div>
+
+        <div *ngIf="i.arquivos.length>0" class="arquivos-container">
+          <ul>
+            <li *ngFor="let f of i.arquivos">
+              <a href="javascript:;" (click)="openPdf(f.path)">
+                <ion-icon class="" slot="start" src="assets/attach_file.svg"></ion-icon>
+                {{f.name}}
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="comments">
+          <div *ngFor="let c of i.comentarios" class="comments-loop">
+            <div class="dv-img">
+              <img [src]="c.foto" alt="Circle Image" class="profile-photo-small rounded-circle img-fluid img-comment">
+            </div>
+            <div class="dv-frente-img">
+              <p class="comment-text">
+                <span>{{c.nome}}:</span>
+                {{c.comentario}}
+
+                <ion-icon *ngIf="c.podeDeletar" (click)="deletaComentario(c.id, i.grtId)" class="deletar-comment text-danger" slot="end" src="assets/delete.svg"></ion-icon>
+              </p>
+            </div>
           </div>
-          <div class="dv-frente-img">
-            <ion-textarea [id]="'txt-comentario-' + i.grtId" autoGrow="true" placeholder="Escreva um comentário"></ion-textarea>
-          </div>
-          <div class="dv-btn-coment">
-            <ion-icon (click)="salvaComentario(i.grtId)" class="text-info" slot="end" src="assets/send.svg"></ion-icon>
+
+          <div class="comments-inserir">
+            <div class="dv-img">
+              <img src="{{fotoLogado}}" alt="Circle Image" class="profile-photo-small rounded-circle img-fluid img-comment">
+            </div>
+            <div class="dv-frente-img">
+              <ion-textarea [id]="'txt-comentario-' + i.grtId" autoGrow="true" placeholder="Escreva um comentário"></ion-textarea>
+            </div>
+            <div class="dv-btn-coment">
+              <ion-icon (click)="salvaComentario(i.grtId)" class="text-info" slot="end" src="assets/send.svg"></ion-icon>
+            </div>
           </div>
         </div>
-      </div>
-    </ion-card-content>
-  </ion-card>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
 
   <ion-row *ngIf="exibeCarregaMais" class="ion-align-items-center">
     <ion-col size="12" style="text-align: center;">

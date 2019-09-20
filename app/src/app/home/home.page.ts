@@ -298,22 +298,24 @@ export class HomePage {
       // ======
 
       var item = {
-        grtId : grtId,
-        titulo: Postagem["grt_titulo"],
-        data: moment(Postagem["dt_postagem"]).tz("America/Sao_Paulo").format("DD/MM HH:mm"),
-        autor: Postagem["pes_nome"],
-        texto: Postagem["grt_texto"],
-        foto: foto,
-        privada: ehPrivada,
-        favorito: ehFavoritado,
-        avaliacaoP: avaliacaoP,
-        avaliacaoN: avaliacaoN,
-        imagens: arrImagens,
-        youtube: arrYoutube,
-        arquivos:arrDocumentos,
-        videos:arrVideos,
-        audios:arrAudios,
-        comentarios:arrComentarios,
+        grtId       : grtId,
+        grpPost     : Postagem["grt_grp_id"],
+        titulo      : Postagem["grt_titulo"],
+        data        : moment(Postagem["dt_postagem"]).tz("America/Sao_Paulo").format("DD/MM HH:mm"),
+        autor       : Postagem["pes_nome"],
+        texto       : Postagem["grt_texto"],
+        foto        : foto,
+        privada     : ehPrivada,
+        favorito    : ehFavoritado,
+        avaliacaoP  : avaliacaoP,
+        avaliacaoN  : avaliacaoN,
+        imagens     : arrImagens,
+        youtube     : arrYoutube,
+        arquivos    : arrDocumentos,
+        videos      : arrVideos,
+        audios      : arrAudios,
+        comentarios : arrComentarios,
+        deletado    : false,
       };
       itensPostagens.push(item);
     }
@@ -380,7 +382,7 @@ export class HomePage {
       correctOrientation: true,
       targetWidth: 1024,
       targetHeight: 768,
-      allowEdit: true,
+      // allowEdit: true,
     };
 
     this.camera.getPicture(options).then((ImageData=>{
@@ -438,40 +440,91 @@ export class HomePage {
     await actionSheet.present();
   }
 
-  async asPostagemOptions()
+  async asPostagemOptions(grpPost, grtId)
   {
-    const actionSheet = await this.actionSheetController.create({
-      header: 'Opções - Postagem',
-      buttons: [{
+    let vButtons = [];
+    vButtons.push(
+      {
         text: 'Salvar Favorito',
         icon: 'assets/favorite.svg',
         handler: () => {
+          console.log('favorito');
+        }
+      }
+    );
 
+    if(this.Usuario["cliente"] == 0){
+      vButtons.push(
+        {
+          text: 'Avaliar Postagem',
+          icon: 'assets/assignment.svg',
+          handler: () => {
+            console.log('avaliar');
+          }
         }
-      }, {
-        text: 'Avaliar Postagem',
-        icon: 'assets/assignment.svg',
-        handler: () => {
+      );
+    }
 
+    if(grpPost == this.grpLogado || this.Usuario["cliente"] == 0){
+      vButtons.push(
+        {
+          text: 'Excluir Postagem',
+          icon: 'assets/delete.svg',
+          handler: () => {
+            this.opcDeletarPostagem(grtId);
+          }
         }
-      },
-      {
-        text: 'Excluir Postagem',
-        icon: 'assets/delete.svg',
-        handler: () => {
+      );
+    }
 
-        }
-      },
-      {
-        text: 'Fechar',
-        icon: 'close',
-        role: 'cancel',
-        handler: () => {
-          
-        }
-      }]
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Opções - Postagem',
+      buttons: vButtons
     });
     await actionSheet.present();
+  }
+
+  async opcDeletarPostagem(grtId)
+  {
+    const alert = await this.alertCtr.create({
+      header: 'Excluir postagem!',
+      message: 'Deseja mesmo excluir essa postagem?',
+      buttons: [
+        {
+          text: 'Não ...',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => { }
+        }, {
+          text: 'Sim!',
+          handler: () => {
+            this.postDeletaPostagem(grtId);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async postDeletaPostagem(grtId)
+  {
+    await this.utilsSrv.getLoader('Processando ...', 'dots');
+
+    var retDeletaPostagem  = await this.TbGrupoTimelineSrv.deletaPostagem(grtId);
+    if(retDeletaPostagem["erro"]){
+      this.utilsSrv.showAlert('Aviso', '', retDeletaPostagem["msg"], ['OK']);
+    } else {
+      for(let idx in this.arrLoop){
+        var postGrtId = this.arrLoop[idx]["grtId"];
+        if(postGrtId == grtId){
+          this.arrLoop[idx]["deletado"] = true;
+        }
+      }
+      // ===============================
+    }
+
+    await this.utilsSrv.closeLoader();
   }
 
   async modalGaleriaImg(imagens, idx)

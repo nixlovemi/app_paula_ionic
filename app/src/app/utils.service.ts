@@ -449,6 +449,7 @@ export class UtilsService {
   getWsPath()
   {
     return 'http://192.168.0.79/app_paula/Rest/';
+    // return 'http://vcmaisleve.com.br/app/Rest/';
   }
 
   getAppKey()
@@ -459,6 +460,7 @@ export class UtilsService {
   getWebsiteUrl()
   {
     return 'http://192.168.0.79/app_paula/';
+    // return 'http://vcmaisleve.com.br/app/';
   }
 
   getPathImgPadrao()
