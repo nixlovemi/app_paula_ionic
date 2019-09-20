@@ -448,7 +448,7 @@ export class HomePage {
         text: 'Salvar Favorito',
         icon: 'assets/favorite.svg',
         handler: () => {
-          console.log('favorito');
+          this.opcFavoritarPostagem(grtId);
         }
       }
     );
@@ -482,6 +482,49 @@ export class HomePage {
       buttons: vButtons
     });
     await actionSheet.present();
+  }
+
+  async opcFavoritarPostagem(grtId)
+  {
+    const alert = await this.alertCtr.create({
+      header: 'Favoritar postagem!',
+      message: 'Deseja mesmo favoritar essa postagem?',
+      buttons: [
+        {
+          text: 'Não ...',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => { }
+        }, {
+          text: 'Sim!',
+          handler: () => {
+            this.postFavoritarPostagem(grtId);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async postFavoritarPostagem(grtId)
+  {
+    await this.utilsSrv.getLoader('Processando ...', 'dots');
+
+    var retFavPostagem  = await this.TbGrupoTimelineSrv.favoritarPostagem(grtId, this.grpLogado);
+    if(retFavPostagem["erro"]){
+      this.utilsSrv.showAlert('Aviso', '', retFavPostagem["msg"], ['OK']);
+    } else {
+      for(let idx in this.arrLoop){
+        var postGrtId = this.arrLoop[idx]["grtId"];
+        if(postGrtId == grtId){
+          this.arrLoop[idx]["favorito"] = true;
+        }
+      }
+      // ===============================
+    }
+
+    await this.utilsSrv.closeLoader();
   }
 
   async opcDeletarPostagem(grtId)
