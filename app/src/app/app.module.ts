@@ -16,6 +16,7 @@ import { StreamingMedia } from '@ionic-native/streaming-media/ngx';
 import { HttpModule } from '@angular/http';
 import { IonicStorageModule } from '@ionic/storage';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { Camera } from '@ionic-native/camera/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -35,6 +36,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
     DocumentViewer,
     StreamingMedia,
     InAppBrowser,
+    Camera,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

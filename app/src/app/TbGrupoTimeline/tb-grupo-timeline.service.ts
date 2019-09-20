@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Http /*, Headers, RequestOptions*/ } from '@angular/http';
 import { UtilsService } from '../utils.service';
 
 @Injectable({
@@ -166,19 +166,61 @@ export class TbGrupoTimelineService {
     });
   }
 
-  postNovoTimelineGrupo(vDescricao, vProgramar, vPublico, vGrpLogado)
+  async ajustaAnexosAntesUpload(vAnexos)
+  {
+    let novoAnexos = [];
+    for(let idx in vAnexos){
+      var Anexo = vAnexos[idx];
+
+      if(Anexo["tipo"] == "img"){
+        var retBlob = await this.utils.makeFileIntoBlob(Anexo["path"]);
+        var addImg = {
+          id: Anexo["id"],
+          nome: Anexo["nome"],
+          tipo: Anexo["tipo"],
+          path: retBlob
+        };
+        novoAnexos.push(addImg);
+      } else {
+        var addImg2 = {
+          id: Anexo["id"],
+          nome: Anexo["nome"],
+          tipo: Anexo["tipo"],
+          path: Anexo["path"]
+        };
+        novoAnexos.push(addImg2);
+      }
+    }
+
+    return novoAnexos;
+  }
+
+  postNovoTimelineGrupo(vDescricao, vProgramar, vPublico, vGrpLogado, vAnexos)
   {
     return new Promise(
     (resolve, reject) => {
       //@todo ver em tds as chamadas HTTP um jeito de pegar qdo der erro no server e/ou n tiver NET
-      let url      = this.wsPath + 'postNovoTimelineGrupo'
-      let postData = {
-        'appkey'    : this.appKey,
-        'descricao' : vDescricao,
-        'programar' : vProgramar,
-        'publico'   : vPublico,
-        'grpLogado' : vGrpLogado,
-      };
+
+      //var headers  = new Headers();
+      //headers.append('content-type', 'multipart/form-data;');
+      //let options  = new RequestOptions({ headers: headers });
+
+      let url      = this.wsPath + 'postNovoTimelineGrupo';
+      let postData = new FormData();
+      postData.append('appkey', this.appKey);
+      postData.append('descricao', vDescricao);
+      postData.append('programar', vProgramar);
+      postData.append('publico', vPublico);
+      postData.append('grpLogado', vGrpLogado);
+
+      if(vAnexos.length > 0){
+        let i = 1;
+        for(let idx in vAnexos){
+          var Anexo = vAnexos[idx];
+          postData.append('imagens[]', Anexo["path"]);
+          i = i + 1;
+        }
+      }
 
       let objRet = {
         msg: '',
@@ -190,8 +232,8 @@ export class TbGrupoTimelineService {
       .subscribe((result: any) => {
         let jsonRet = result.json();
 
-        objRet.msg       = jsonRet.msg;
-        objRet.erro      = jsonRet.erro;
+        objRet.msg  = jsonRet.msg;
+        objRet.erro = jsonRet.erro;
 
         resolve(objRet);
       },

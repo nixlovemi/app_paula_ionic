@@ -54,6 +54,17 @@
             </ion-button>
           </ion-col>
         </ion-row>
+
+        <ion-row *ngFor="let anx of infoPostar.anexos" style="height: 30px;">
+          <ion-col size="2" text-left>
+            <ion-button class="buttom-red" style="font-size:9px;" (click)="removeAnexo(anx.id);">
+              <ion-icon slot="icon-only" src="assets/delete.svg"></ion-icon>
+            </ion-button>
+          </ion-col>
+          <ion-col size="10" text-left>
+            <ion-button class="buttom-gray" style="font-size:10px; text-align: left;" expand="block">Anexo: {{anx.nome}}</ion-button>
+          </ion-col>
+        </ion-row>
       </ion-grid>
     </ion-card-content>
   </ion-card>

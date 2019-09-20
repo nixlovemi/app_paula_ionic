@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
+import { Md5 } from 'ts-md5/dist/md5';
+import { File } from '@ionic-native/file/ngx';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +12,8 @@ export class UtilsService {
   constructor(
     private alertCtr: AlertController,
     private loadingCtr: LoadingController,
-    private storage: Storage
+    private storage: Storage,
+    public file: File,
   ) { }
 
   /* session */
@@ -506,5 +509,85 @@ export class UtilsService {
 
     let strDateFmt  = format.replace('YYYY', ano).replace('MM', mes).replace('DD', dia).replace('HH', hora).replace('MI', minuto).replace('SS', segundo);
     return strDateFmt;
+  }
+
+  encriptaStr(texto)
+  {
+    return Md5.hashStr(texto);
+  }
+
+  async makeFileIntoBlob(_imagePath)
+  {
+    let fileName = "";
+    await this.file
+      .resolveLocalFilesystemUrl(_imagePath)
+      .then(fileEntry => {
+        let { name, nativeURL } = fileEntry;
+
+        // get the path..
+        let path = nativeURL.substring(0, nativeURL.lastIndexOf("/"));
+
+        fileName = name;
+
+        // we are provided the name, so now read the file into a buffer
+        return this.file.readAsArrayBuffer(path, name);
+      })
+      .then(buffer => {
+        // get the buffer and make a blob to be saved
+
+        let imgBlob = new Blob([buffer], {
+          type: "image/jpeg"
+        });
+
+        /*var myReader = new FileReader();
+        myReader.onload = function(event){
+
+        };
+        myReader.readAsText(imgBlob);*/
+
+        // pass back blob and the name of the file for saving
+        // into fire base
+
+        return imgBlob;
+      });
+
+    // INSTALL PLUGIN - cordova plugin add cordova-plugin-file
+    /*return new Promise((resolve, reject) => {
+      let fileName = "";
+      this.file
+        .resolveLocalFilesystemUrl(_imagePath)
+        .then(fileEntry => {
+          let { name, nativeURL } = fileEntry;
+
+          // get the path..
+          let path = nativeURL.substring(0, nativeURL.lastIndexOf("/"));
+
+          fileName = name;
+
+          // we are provided the name, so now read the file into a buffer
+          return this.file.readAsArrayBuffer(path, name);
+        })
+        .then(buffer => {
+          // get the buffer and make a blob to be saved
+
+          let imgBlob = new Blob([buffer], {
+            type: "image/jpeg"
+          });
+
+          var myReader = new FileReader();
+          myReader.onload = function(event){
+              console.log(JSON.stringify(myReader.result));
+          };
+          myReader.readAsText(imgBlob);
+
+          // pass back blob and the name of the file for saving
+          // into fire base
+          resolve({
+            fileName,
+            imgBlob
+          });
+        })
+        .catch(e => reject(e));
+    });*/
   }
 }

@@ -11,6 +11,7 @@ import { Router, ActivatedRoute } from  "@angular/router";
 import { TbGrupoTimelineService } from  "../TbGrupoTimeline/tb-grupo-timeline.service";
 import { TbGrupoPessoaService } from  "../TbGrupoPessoa/tb-grupo-pessoa.service";
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import * as moment from 'moment';
 import 'moment-timezone';
 //import * as momentTz from 'moment-timezone';
@@ -21,7 +22,7 @@ import 'moment-timezone';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  infoPostar = {};
+  infoPostar;
   arrLoop = [];
   grpId; //param da URL
 
@@ -48,6 +49,7 @@ export class HomePage {
     private TbGrupoPessoa: TbGrupoPessoaService,
     private iab: InAppBrowser,
     private alertCtr: AlertController,
+    private camera: Camera,
   ) {}
 
   async ngOnInit()
@@ -333,7 +335,8 @@ export class HomePage {
   async postPublicar()
   {
     await this.utilsSrv.getLoader('Postando ...', 'dots');
-    var retPostagem = await this.TbGrupoTimelineSrv.postNovoTimelineGrupo(this.infoPostar.texto, this.infoPostar.programar, this.infoPostar.publico, this.grpLogado);
+    //var novoAnexos  = await this.TbGrupoTimelineSrv.ajustaAnexosAntesUpload(this.infoPostar.anexos);
+    var retPostagem = await this.TbGrupoTimelineSrv.postNovoTimelineGrupo(this.infoPostar.texto, this.infoPostar.programar, this.infoPostar.publico, this.grpLogado, this.infoPostar.anexos);
     await this.utilsSrv.closeLoader();
 
     if(retPostagem["erro"]){
@@ -345,28 +348,90 @@ export class HomePage {
     }
   }
 
+  async removeAnexo(id)
+  {
+    var novoArrAnexo = [];
+    for(let idx in this.infoPostar.anexos){
+      var anexo = this.infoPostar.anexos[idx];
+      if(anexo["id"] != id){
+        novoArrAnexo.push(anexo);
+      }
+    }
+
+    this.infoPostar.anexos = novoArrAnexo;
+  }
+
+  openCameraImage(album=false)
+  {
+    var sourceType;
+    if(album){
+      sourceType = this.camera.PictureSourceType.PHOTOLIBRARY;
+    } else {
+      sourceType = this.camera.PictureSourceType.CAMERA;
+    }
+
+    const options : CameraOptions = {
+      quality: 60,
+      destinationType: this.camera.DestinationType.DATA_URL,
+      //destinationType: this.camera.DestinationType.FILE_URI,
+      encodingType: this.camera.EncodingType.JPEG,
+      mediaType: this.camera.MediaType.PICTURE,
+      sourceType: sourceType,
+      correctOrientation: true,
+      targetWidth: 1024,
+      targetHeight: 768,
+      allowEdit: true,
+    };
+
+    this.camera.getPicture(options).then((ImageData=>{
+      var nomeAddImg = 'Imagem ' + (Object.keys(this.infoPostar.anexos).length + 1);
+      var idAddImg   = this.utilsSrv.encriptaStr(nomeAddImg);
+
+      var addImg = {
+        id: idAddImg,
+        nome: nomeAddImg,
+        tipo: 'img',
+        path: "data:image/jpeg;base64,"+ImageData
+        //path: ImageData
+      };
+      this.infoPostar.anexos.push(addImg);
+
+      //this.base64img="data:image/jpeg;base64,"+ImageData;
+    }),error=>{
+      //@todo tratar esse erro
+    });
+  }
+
   async asUploadOptions()
   {
     const actionSheet = await this.actionSheetController.create({
       header: 'Anexar - Postagem',
       buttons: [{
-        text: 'Do Celular',
+        text: 'Da Biblioteca',
         icon: 'folder',
         handler: () => {
-          console.log('Share clicked');
+          this.openCameraImage(true);
         }
-      }, {
+      },
+      {
+        text: 'Da Câmera',
+        icon: 'camera',
+        handler: () => {
+          this.openCameraImage(false);
+        }
+      }
+      /*, {
         text: 'Youtube',
         icon: 'logo-youtube',
         handler: () => {
-          console.log('Play clicked');
+
         }
-      }, {
+      }*/, {
         text: 'Cancelar',
         icon: 'close',
         role: 'cancel',
         handler: () => {
-          console.log('Cancel clicked');
+
         }
       }]
     });
@@ -381,20 +446,20 @@ export class HomePage {
         text: 'Salvar Favorito',
         icon: 'assets/favorite.svg',
         handler: () => {
-          console.log('Share clicked');
+
         }
       }, {
         text: 'Avaliar Postagem',
         icon: 'assets/assignment.svg',
         handler: () => {
-          console.log('Play clicked');
+
         }
       },
       {
         text: 'Excluir Postagem',
         icon: 'assets/delete.svg',
         handler: () => {
-          console.log('Play clicked');
+
         }
       },
       {
@@ -402,7 +467,7 @@ export class HomePage {
         icon: 'close',
         role: 'cancel',
         handler: () => {
-          console.log('Cancel clicked');
+          
         }
       }]
     });
@@ -430,7 +495,7 @@ export class HomePage {
       path = this.file.dataDirectory;
     }
     */
-    /*console.log(1);
+    /*
     this.document.viewDocument(this.file.applicationDirectory + 'www/assets/pdf-test.pdf', 'application/pdf', {});
     */
 
@@ -442,10 +507,10 @@ export class HomePage {
     // Play a video with callbacks
     var options = {
       successCallback: function() {
-        //console.log("Video was closed without error.");
+
       },
       errorCallback: function(errMsg) {
-        //console.log("Error! " + errMsg);
+
       },
       //orientation: 'landscape',
       shouldAutoClose: true,  // true(default)/false
@@ -464,10 +529,8 @@ export class HomePage {
       initFullscreen: false, // true is default. iOS only.
       keepAwake: false, // prevents device from sleeping. true is default. Android only.
       successCallback: function() {
-        //console.log("Player closed without error.");
       },
       errorCallback: function(errMsg) {
-        //console.log("Error! " + errMsg);
       }
     };
     this.streamingMedia.playAudio(vPath, options);
