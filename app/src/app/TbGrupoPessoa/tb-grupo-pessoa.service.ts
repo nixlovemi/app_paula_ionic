@@ -97,4 +97,50 @@ export class TbGrupoPessoaService {
       });
     });
   }
+
+  pegaMeuPerfil(grp_id)
+  {
+    return new Promise(
+    (resolve, reject) => {
+      //@todo ver em tds as chamadas HTTP um jeito de pegar qdo der erro no server e/ou n tiver NET
+      let url      = this.wsPath + 'meuPerfil'
+      let postData = {
+        'appkey' : this.appKey,
+        'grp_id' : grp_id,
+      };
+
+      let objRet = {
+        msg: '',
+        erro: false,
+        httpStatus: {},
+        Medidas: {},
+        Progresso: {},
+        Imc: {},
+        CalcAgua:''
+      };
+
+      this.http.post(url, postData)
+      .subscribe((result: any) => {
+        let jsonRet = result.json();
+
+        objRet.msg       = jsonRet.msg;
+        objRet.erro      = jsonRet.erro;
+        objRet.Medidas   = jsonRet.medidas;
+        objRet.Progresso = jsonRet.progresso;
+        objRet.Imc       = jsonRet.imc;
+        objRet.CalcAgua  = jsonRet.calc_agua;
+
+        resolve(objRet);
+      },
+      (error) => {
+        // {"_body":{"isTrusted":true},"status":0,"ok":false,"statusText":"","headers":{},"type":3,"url":null}
+        // reject(error.json());
+        objRet.erro       = true;
+        objRet.httpStatus = error;
+        objRet.msg        = 'Erro ao comunicar com o servidor';
+
+        resolve(objRet);
+      });
+    });
+  }
 }

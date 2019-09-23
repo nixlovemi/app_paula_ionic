@@ -11,13 +11,13 @@
 
 <ion-content>
   <div class="card-avatar">
-    <img src="assets/temp-foto-perfil-pes-1.jpg">
+    <img [src]="fotoLogado">
   </div>
   <ion-card id="card-principal" class="card-new card-white">
     <ion-card-content>
-      <span id="spn-nome">Leandro F. da Silva</span>
-      <span id="spn-email">nixlovemi@gmail.com</span>
-      <p>Cliente, participante do grupo Grupo VML1 no período de 10/08/2019 a 10/10/2019.</p>
+      <span id="spn-nome">{{nomeLogado}}</span>
+      <span id="spn-email">{{emailLogado}}</span>
+      <p>Cliente, participante do grupo <b>{{nomeGrupoLogado}}</b> no período de {{dtIniGrupoLogado}} a {{dtFimGrupoLogado}}.</p>
     </ion-card-content>
   </ion-card>
 
@@ -29,30 +29,36 @@
     </ion-card-header>
 
     <ion-card-content>
-      <ion-item>
-        <ion-label position="stacked">Data</ion-label>
-        <ion-input disabled="true" value="12/08/2019"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="stacked">Altura</ion-label>
-        <ion-input disabled="true" value="178cm"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="stacked">Peso</ion-label>
-        <ion-input disabled="true" value="82,000kg"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="stacked">Peso (Objetivo)</ion-label>
-        <ion-input disabled="true" value="76,000kg"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="stacked">Diferença</ion-label>
-        <ion-input disabled="true" value="6,000kg"></ion-input>
-      </ion-item>
+      <div *ngIf="showLctoInicial">
+        Lançar medidas iniciais
+      </div>
+
+      <div *ngIf="!showLctoInicial">
+        <ion-item>
+          <ion-label position="stacked">Data</ion-label>
+          <ion-input disabled="true" [value]="vInfoInicial.data"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Altura</ion-label>
+          <ion-input disabled="true" [value]="vInfoInicial.altura"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Peso KG</ion-label>
+          <ion-input disabled="true" [value]="vInfoInicial.peso | number:'1.3-3':'pt'"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Peso KG (Objetivo)</ion-label>
+          <ion-input disabled="true" [value]="vInfoInicial.peso_obj | number:'1.3-3':'pt'"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Diferença KG</ion-label>
+          <ion-input disabled="true" [value]="vInfoInicial.peso_dif | number:'1.3-3':'pt'"></ion-input>
+        </ion-item>
+      </div>
     </ion-card-content>
   </ion-card>
 
-  <ion-card class="card-new card-white">
+  <ion-card *ngIf="vLoopMedidas.length > 0" class="card-new card-white">
     <ion-card-header>
       <div class="title">
         Acompanhamento
@@ -66,40 +72,16 @@
             Data
           </ion-col>
           <ion-col size="6">
-            Peso
+            Peso (KG)
           </ion-col>
         </ion-row>
 
-        <ion-row>
+        <ion-row *ngFor="let m of vLoopMedidas">
           <ion-col size="6">
-            13/08/2019
+            {{m.data}}
           </ion-col>
           <ion-col size="6">
-            81,500KG
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="6">
-            14/08/2019
-          </ion-col>
-          <ion-col size="6">
-            81,100KG
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="6">
-            15/08/2019
-          </ion-col>
-          <ion-col size="6">
-            79,100KG
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size="6">
-            20/08/2019
-          </ion-col>
-          <ion-col size="6">
-            78,050KG
+            {{m.peso | number:'1.3-3':'pt'}}
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -111,12 +93,12 @@
       <canvas #progressaoMedidas></canvas>
       <br />
       <h2>Progressão das Medidas</h2>
-      <p class="text-info">Você está com 97,373% do objetivo concluído.</p>
+      <p class="text-info">Você está com {{vInfoProgresso.percentual | number:'1.3-3':'pt'}}% do objetivo concluído. Faltam apenas {{vInfoProgresso.peso_falta | number:'1.3-3':'pt'}}KG</p>
 
       <span class="hr-linha"></span>
 
-      <p><b>IMC:</b> 24,63 - Peso Normal</p>
-      <p><b>Água/dia:</b> 2,73L</p>
+      <p><b>IMC:</b> {{vInfoImc.imc | number:'1.2-2':'pt'}} - {{vInfoImc.resultado}}</p>
+      <p><b>Água/dia:</b> {{vCalcAgua | number:'1.2-2':'pt'}}L</p>
     </ion-card-content>
   </ion-card>
 </ion-content>

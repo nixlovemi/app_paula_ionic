@@ -17,6 +17,11 @@ import { HttpModule } from '@angular/http';
 import { IonicStorageModule } from '@ionic/storage';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { Camera } from '@ionic-native/camera/ngx';
+import { CurrencyPipe } from '@angular/common';
+
+import { registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
+registerLocaleData(localePt, 'pt');
 
 @NgModule({
   declarations: [AppComponent],
@@ -37,6 +42,7 @@ import { Camera } from '@ionic-native/camera/ngx';
     StreamingMedia,
     InAppBrowser,
     Camera,
+    CurrencyPipe,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
