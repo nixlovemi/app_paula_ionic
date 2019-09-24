@@ -100,7 +100,6 @@ export class PgLctoMedidasPage implements OnInit {
     gruId       = this.gruIdLogado;
 
     var retGPI  = await this.TbGrupoPessoaInfoSvc.salvaMedidas(data, altura, peso_kg, peso_kg_obj, primeira, pesId, gruId);
-    console.log(retGPI);
     if(retGPI["erro"]){
       this.utilsSrv.showAlert('Aviso!', '', retGPI["msg"], ['OK']);
     } else {

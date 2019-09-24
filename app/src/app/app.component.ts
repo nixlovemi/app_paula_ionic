@@ -18,7 +18,17 @@ export class AppComponent {
     nome: '',
     email: '',
     foto: '',
-  }
+  };
+  vInfoProgresso = {
+    percentual:0,
+    peso_falta:0,
+  };
+  vInfoProgressoGrupo = {
+    perc_progresso: 0,
+    progresso: 0,
+    dias_ini: 0,
+    dias_fim: 0,
+  };
 
   constructor(
     private platform: Platform,
@@ -41,6 +51,9 @@ export class AppComponent {
 
       this.events.subscribe('carregarMenuInfo', () => {
         this.carregarMenuInfo();
+      });
+      this.events.subscribe('carregarProgressoInfo', () => {
+        this.carregarProgressoInfo();
       });
     });
   }
@@ -145,5 +158,25 @@ export class AppComponent {
     // ============
 
     await this.menuCtrl.enable(true);
+  }
+
+  async carregarProgressoInfo()
+  {
+    let retGrpLogado = await this.utilsSrv.getGrpIdLogado();
+    var grpLogado    = retGrpLogado["grpId"];
+
+    let retGruLogado = await this.utilsSrv.getGrupoLogado();
+    var gruLogado    = retGruLogado["grp_gru_id"];
+
+    var retProgresso = await this.tbGrupoPessoa.pegaProgresso(grpLogado, gruLogado);
+    if(!retProgresso["erro"]){
+      this.vInfoProgresso.percentual = retProgresso.Progresso["progresso"];
+      this.vInfoProgresso.peso_falta = retProgresso.Progresso["dif_atual"];
+
+      this.vInfoProgressoGrupo.perc_progresso = retProgresso.Progresso_Grupo["percGrupo"] / 100;
+      this.vInfoProgressoGrupo.progresso      = retProgresso.Progresso_Grupo["percGrupo"];
+      this.vInfoProgressoGrupo.dias_ini       = retProgresso.Progresso_Grupo["diasGrupo"];
+      this.vInfoProgressoGrupo.dias_fim       = retProgresso.Progresso_Grupo["totalDiasGrupo"];
+    }
   }
 }

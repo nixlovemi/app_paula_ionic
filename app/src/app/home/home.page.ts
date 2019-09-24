@@ -573,7 +573,6 @@ export class HomePage {
     await this.utilsSrv.getLoader('Processando ...', 'dots');
 
     var retAvalPostagem  = await this.TbGrupoTimelineSrv.avaliarPostagem(grtId, avaliacao);
-    console.log(retAvalPostagem);
     if(retAvalPostagem["erro"]){
       this.utilsSrv.showAlert('Aviso', '', retAvalPostagem["msg"], ['OK']);
     } else {

@@ -3,7 +3,7 @@ import { Chart } from 'chart.js';
 import { UtilsService } from '../utils.service';
 import { TbGrupoPessoaService } from  "../TbGrupoPessoa/tb-grupo-pessoa.service";
 import { CurrencyPipe } from '@angular/common';
-import { ModalController } from '@ionic/angular';
+import { ModalController, Events } from '@ionic/angular';
 import { PgLctoMedidasPage } from '../pg-lcto-medidas/pg-lcto-medidas.page';
 import * as moment from 'moment';
 import 'moment-timezone';
@@ -55,7 +55,8 @@ export class PgPerfilPage implements OnInit {
     public utilsSrv: UtilsService,
     private TbGrupoPessoa: TbGrupoPessoaService,
     public currencyPipe: CurrencyPipe,
-    public modalController: ModalController
+    public modalController: ModalController,
+    private events: Events,
   ) { }
 
   ngOnInit()
@@ -81,7 +82,7 @@ export class PgPerfilPage implements OnInit {
 
   async carregaGrafico()
   {
-    if(typeof this.infoDemais != 'undefined' && this.infoDemais.length > 0){
+    if(typeof this.infoDemais != 'undefined' && Object.keys(this.infoDemais).length > 0){
       let grafLabel = [];
       let grafPeso  = [];
       var grafIdx   = 1;
@@ -199,6 +200,7 @@ export class PgPerfilPage implements OnInit {
 
     // carrega grafico
     this.carregaGrafico();
+    await this.events.publish('carregarProgressoInfo');
 
     await this.utilsSrv.closeLoader();
   }

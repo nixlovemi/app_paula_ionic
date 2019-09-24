@@ -143,4 +143,47 @@ export class TbGrupoPessoaService {
       });
     });
   }
+
+  pegaProgresso(grp_id, gru_id)
+  {
+    return new Promise(
+    (resolve, reject) => {
+      //@todo ver em tds as chamadas HTTP um jeito de pegar qdo der erro no server e/ou n tiver NET
+      let url      = this.wsPath + 'pegaProgresso'
+      let postData = {
+        'appkey' : this.appKey,
+        'grp_id' : grp_id,
+        'gru_id' : gru_id,
+      };
+
+      let objRet = {
+        msg: '',
+        erro: false,
+        httpStatus: {},
+        Progresso: {},
+        Progresso_Grupo: {},
+      };
+
+      this.http.post(url, postData)
+      .subscribe((result: any) => {
+        let jsonRet = result.json();
+
+        objRet.msg             = jsonRet.msg;
+        objRet.erro            = jsonRet.erro;
+        objRet.Progresso       = jsonRet.Progresso;
+        objRet.Progresso_Grupo = jsonRet.Progresso_Grupo;
+
+        resolve(objRet);
+      },
+      (error) => {
+        // {"_body":{"isTrusted":true},"status":0,"ok":false,"statusText":"","headers":{},"type":3,"url":null}
+        // reject(error.json());
+        objRet.erro       = true;
+        objRet.httpStatus = error;
+        objRet.msg        = 'Erro ao comunicar com o servidor';
+
+        resolve(objRet);
+      });
+    });
+  }
 }

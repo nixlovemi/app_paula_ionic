@@ -55,6 +55,7 @@ export class PgLoginPage implements OnInit {
       await this.utilsSrv.gravaInfoLogin(vGrpId, vUsuario, vGrupos);
       await this.router.navigate(['/home']);
       await this.events.publish('carregarMenuInfo');
+      await this.events.publish('carregarProgressoInfo');
     }
     // ===================================
   }
