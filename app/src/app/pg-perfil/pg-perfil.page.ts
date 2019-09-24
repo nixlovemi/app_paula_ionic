@@ -1,8 +1,10 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, ElementRef } from '@angular/core';
 import { Chart } from 'chart.js';
 import { UtilsService } from '../utils.service';
 import { TbGrupoPessoaService } from  "../TbGrupoPessoa/tb-grupo-pessoa.service";
 import { CurrencyPipe } from '@angular/common';
+import { ModalController } from '@ionic/angular';
+import { PgLctoMedidasPage } from '../pg-lcto-medidas/pg-lcto-medidas.page';
 import * as moment from 'moment';
 import 'moment-timezone';
 
@@ -13,6 +15,7 @@ import 'moment-timezone';
 })
 export class PgPerfilPage implements OnInit {
   @ViewChild("progressaoMedidas", {static: false}) progressaoMedidas: ElementRef;
+  //@ViewChildren('progressaoMedidas') progressaoMedidas;
   private lineChart: Chart;
 
   grpLogado;
@@ -33,9 +36,9 @@ export class PgPerfilPage implements OnInit {
   vInfoInicial = {
     data:'',
     altura:'',
-    peso:'',
-    peso_obj:'',
-    peso_dif:''
+    peso:0,
+    peso_obj:0,
+    peso_dif:0
   };
   vInfoProgresso = {
     percentual : '',
@@ -51,7 +54,8 @@ export class PgPerfilPage implements OnInit {
   constructor(
     public utilsSrv: UtilsService,
     private TbGrupoPessoa: TbGrupoPessoaService,
-    public currencyPipe: CurrencyPipe
+    public currencyPipe: CurrencyPipe,
+    public modalController: ModalController
   ) { }
 
   ngOnInit()
@@ -70,12 +74,22 @@ export class PgPerfilPage implements OnInit {
     */
   }
 
-  async ngAfterViewInit()
+  ngAfterViewInit()
+  {
+    this.carregaGrafico();
+  }
+
+  async carregaGrafico()
   {
     if(typeof this.infoDemais != 'undefined' && this.infoDemais.length > 0){
       let grafLabel = [];
       let grafPeso  = [];
       var grafIdx   = 1;
+
+      grafLabel.push(grafIdx + '');
+      grafPeso.push(this.infoInicial["gpi_peso"]);
+      grafIdx = grafIdx + 1;
+
       for(let idx in this.infoDemais){
         var medidaDemais = this.infoDemais[idx];
 
@@ -84,7 +98,6 @@ export class PgPerfilPage implements OnInit {
         grafIdx = grafIdx + 1;
       }
 
-      // grafico
       this.lineChart = new Chart(this.progressaoMedidas.nativeElement, {
         type: "line",
         data: {
@@ -128,6 +141,8 @@ export class PgPerfilPage implements OnInit {
 
   async ionViewWillEnter()
   {
+    await this.utilsSrv.getLoader('Carregando ...', 'dots');
+
     let retGrpLogado = await this.utilsSrv.getGrpIdLogado();
     var grpLogado    = retGrpLogado["grpId"];
     this.grpLogado   = grpLogado;
@@ -157,11 +172,13 @@ export class PgPerfilPage implements OnInit {
     this.infoImc         = retMedidas["Imc"];
     this.showLctoInicial = Object.keys(this.infoInicial).length <= 0;
 
-    this.vInfoInicial.data     = moment(this.infoInicial["gpi_data"]).tz("America/Sao_Paulo").format("DD/MM/YYYY");
-    this.vInfoInicial.altura   = this.infoInicial["gpi_altura"] + 'cm';
-    this.vInfoInicial.peso     = this.infoInicial["gpi_peso"];
-    this.vInfoInicial.peso_obj = this.infoInicial["gpi_peso_objetivo"];
-    this.vInfoInicial.peso_dif = this.infoInicial["gpi_peso"] - this.infoInicial["gpi_peso_objetivo"];
+    if(this.infoInicial !== {}){
+      this.vInfoInicial.data     = moment(this.infoInicial["gpi_data"]).tz("America/Sao_Paulo").format("DD/MM/YYYY");
+      this.vInfoInicial.altura   = this.infoInicial["gpi_altura"] + 'cm';
+      this.vInfoInicial.peso     = this.infoInicial["gpi_peso"];
+      this.vInfoInicial.peso_obj = this.infoInicial["gpi_peso_objetivo"];
+      this.vInfoInicial.peso_dif = this.infoInicial["gpi_peso"] - this.infoInicial["gpi_peso_objetivo"];
+    }
 
     this.vInfoProgresso.percentual = this.infoProgresso["progresso"];
     this.vInfoProgresso.peso_falta = this.infoProgresso["dif_atual"];
@@ -170,6 +187,7 @@ export class PgPerfilPage implements OnInit {
     this.vInfoImc.resultado = this.infoImc["resultado"];
     this.vCalcAgua          = retMedidas["CalcAgua"];
 
+    this.vLoopMedidas = [];
     for(let idx in this.infoDemais){
       var medidaDemais = this.infoDemais[idx];
       var item = {
@@ -179,11 +197,25 @@ export class PgPerfilPage implements OnInit {
       this.vLoopMedidas.push(item);
     }
 
-    this.ngAfterViewInit();
+    // carrega grafico
+    this.carregaGrafico();
 
-    console.log(this.infoInicial);
-    console.log(this.infoDemais);
-    console.log(this.infoProgresso);
-    console.log(this.infoImc);
+    await this.utilsSrv.closeLoader();
+  }
+
+  async lancarMedida(inicial=false)
+  {
+    const modal = await this.modalController.create({
+      component: PgLctoMedidasPage,
+      componentProps: {
+        'inicial' : inicial,
+      }
+    });
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if(data.reload){
+      this.ionViewWillEnter();
+    }
   }
 }

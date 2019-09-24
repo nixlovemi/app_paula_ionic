@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons class="text-info" color="#00bcd4" slot="start">
+      <ion-button slot="icon-only" (click)="closeModal()">
+        <ion-icon item-right name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{tituloModal}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card class="card-new card-white">
+    <ion-card-header>
+      <div class="title">
+        Preencha
+      </div>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Data</ion-label>
+        <ion-datetime
+          [(ngModel)]="infoLcto.data"
+          (ionCancel)="clearInput('data')"
+          class="custom-input"
+          display-format="DD/MM/YYYY"
+          picker-format="DD/MM/YYYY"
+          month-names="Janeiro, Fevereiro, Março, Abril, Maio, Junho, Julho, Agosto, Setembro, Outubro, Novembro, Dezembro"
+          cancelText="Limpar"
+          doneText="Selecionar"
+        ></ion-datetime>
+      </ion-item>
+      <ion-item *ngIf="inicial">
+        <ion-label position="stacked">Altura (cm)</ion-label>
+        <ion-input type="tel" maxlength="3" pattern="[0-9]*" [(ngModel)]="infoLcto.altura"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Peso KG</ion-label>
+        <ion-input type="tel" maxlength="7" [brmasker]="{money:true, thousand:'.', decimalCaracter:',', decimal:'3', type:'num'}" [(ngModel)]="infoLcto.peso"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="inicial">
+        <ion-label position="stacked">Peso KG (Objetivo)</ion-label>
+        <ion-input type="tel" maxlength="7" [brmasker]="{money:true, thousand:'.', decimalCaracter:',', decimal:'3', type:'num'}" [(ngModel)]="infoLcto.peso_obj"></ion-input>
+      </ion-item>
+
+      <div text-center style="margin-top:15px;">
+        <ion-button (click)="salvaMedidas()" class="buttom-blue">
+          Salvar
+        </ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

@@ -875,4 +875,8 @@ export class HomePage {
 
     await this.utilsSrv.closeLoader();
   }
+
+  clearInput(element){
+    this.infoPostar[element] = '';
+  }
 }

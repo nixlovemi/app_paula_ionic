@@ -30,7 +30,12 @@
 
     <ion-card-content>
       <div *ngIf="showLctoInicial">
-        Lançar medidas iniciais
+        <p style="margin-top:10px; text-align: center;">As medidas iniciais não foram lançadas.</p>
+        <div style="text-align: center;">
+          <ion-button (click)="lancarMedida(true)" class="buttom-blue center-item">
+            Lançar agora
+          </ion-button>
+        </div>
       </div>
 
       <div *ngIf="!showLctoInicial">
@@ -88,10 +93,12 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card class="card-new card-white">
+  <ion-card [ngClass]="vInfoInicial.peso_obj > 0 ? 'ion-show': 'ion-hide'" class="card-new card-white">
     <ion-card-content>
-      <canvas #progressaoMedidas></canvas>
-      <br />
+      <ion-button *ngIf="vInfoInicial.peso_obj > 0" (click)="lancarMedida(false)" size="small" class="buttom-blue">Lançar Medida</ion-button>
+      <!-- nao pode user ngIf com o chart.js -->
+      <div [ngClass]="vLoopMedidas.length > 0 ? 'ion-show': 'ion-hide'"><canvas #progressaoMedidas></canvas></div>
+      <br *ngIf="vLoopMedidas.length > 0" />
       <h2>Progressão das Medidas</h2>
       <p class="text-info">Você está com {{vInfoProgresso.percentual | number:'1.3-3':'pt'}}% do objetivo concluído. Faltam apenas {{vInfoProgresso.peso_falta | number:'1.3-3':'pt'}}KG</p>
 

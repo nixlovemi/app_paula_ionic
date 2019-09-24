@@ -18,6 +18,8 @@ import { IonicStorageModule } from '@ionic/storage';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { Camera } from '@ionic-native/camera/ngx';
 import { CurrencyPipe } from '@angular/common';
+import { PgLctoMedidasPageModule } from './pg-lcto-medidas/pg-lcto-medidas.module';
+import { BrMaskerModule } from 'br-mask';
 
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -31,7 +33,9 @@ registerLocaleData(localePt, 'pt');
     IonicModule.forRoot(),
     AppRoutingModule,
     PgGaleriaImagemPageModule,
+    PgLctoMedidasPageModule,
     HttpModule,
+    BrMaskerModule,
     IonicStorageModule.forRoot(),
   ],
   providers: [

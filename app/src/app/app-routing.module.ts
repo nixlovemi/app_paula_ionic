@@ -21,7 +21,8 @@ const routes: Routes = [
   },
   { path: 'pg-galeria-imagem', loadChildren: './pg-galeria-imagem/pg-galeria-imagem.module#PgGaleriaImagemPageModule' },
   { path: 'pg-perfil', loadChildren: './pg-perfil/pg-perfil.module#PgPerfilPageModule' },
-  { path: 'pg-login', loadChildren: './pg-login/pg-login.module#PgLoginPageModule' }
+  { path: 'pg-login', loadChildren: './pg-login/pg-login.module#PgLoginPageModule' },
+  { path: 'pg-lcto-medidas', loadChildren: './pg-lcto-medidas/pg-lcto-medidas.module#PgLctoMedidasPageModule' }
 ];
 
 @NgModule({

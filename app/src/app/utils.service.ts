@@ -513,6 +513,26 @@ export class UtilsService {
     return strDateFmt;
   }
 
+  /*
+  * valor: valor desejado para a formatação
+  * decimais: quantidade de casas decimais, por padrão será 2
+  * simbolo: tipo de moeda, por padrão é vazia
+  */
+  formatMoney(valor, decimais = 2, simbolo = '') {
+    if (isNaN(valor)) return '';
+    else {
+      let vValor = parseFloat(valor);
+      let numero = vValor.toFixed(decimais).split('.');
+      numero[0] = simbolo + numero[0].split(/(?=(?:...)*$)/).join('.');
+      return numero.join(',');
+    }
+  }
+
+  acerta_moeda(valor)
+  {
+    return parseFloat( valor.replace('.', '').replace(',', '.') );
+  }
+
   encriptaStr(texto)
   {
     return Md5.hashStr(texto);
