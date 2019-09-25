@@ -186,4 +186,45 @@ export class TbGrupoPessoaService {
       });
     });
   }
+
+  atualizaFotoPerfil(pesId, foto64)
+  {
+    return new Promise(
+    (resolve, reject) => {
+      //@todo ver em tds as chamadas HTTP um jeito de pegar qdo der erro no server e/ou n tiver NET
+      let url      = this.wsPath + 'atualizaFotoPerfil'
+      let postData = {
+        'appkey' : this.appKey,
+        'pes_id' : pesId,
+        'foto'   : foto64,
+      };
+
+      let objRet = {
+        msg: '',
+        erro: false,
+        httpStatus: {},
+        foto: '',
+      };
+
+      this.http.post(url, postData)
+      .subscribe((result: any) => {
+        let jsonRet = result.json();
+
+        objRet.msg  = jsonRet.msg;
+        objRet.erro = jsonRet.erro;
+        objRet.foto = jsonRet.foto;
+
+        resolve(objRet);
+      },
+      (error) => {
+        // {"_body":{"isTrusted":true},"status":0,"ok":false,"statusText":"","headers":{},"type":3,"url":null}
+        // reject(error.json());
+        objRet.erro       = true;
+        objRet.httpStatus = error;
+        objRet.msg        = 'Erro ao comunicar com o servidor';
+
+        resolve(objRet);
+      });
+    });
+  }
 }

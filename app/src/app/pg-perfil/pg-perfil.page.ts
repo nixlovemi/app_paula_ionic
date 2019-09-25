@@ -3,8 +3,9 @@ import { Chart } from 'chart.js';
 import { UtilsService } from '../utils.service';
 import { TbGrupoPessoaService } from  "../TbGrupoPessoa/tb-grupo-pessoa.service";
 import { CurrencyPipe } from '@angular/common';
-import { ModalController, Events } from '@ionic/angular';
+import { ModalController, Events, ActionSheetController } from '@ionic/angular';
 import { PgLctoMedidasPage } from '../pg-lcto-medidas/pg-lcto-medidas.page';
+import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import * as moment from 'moment';
 import 'moment-timezone';
 
@@ -57,6 +58,8 @@ export class PgPerfilPage implements OnInit {
     public currencyPipe: CurrencyPipe,
     public modalController: ModalController,
     private events: Events,
+    private actionSheetController: ActionSheetController,
+    private camera: Camera,
   ) { }
 
   ngOnInit()
@@ -219,5 +222,86 @@ export class PgPerfilPage implements OnInit {
     if(data.reload){
       this.ionViewWillEnter();
     }
+  }
+
+  async asAlteraFoto()
+  {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Alterar Foto Perfil',
+      buttons: [{
+        text: 'Da Biblioteca',
+        icon: 'folder',
+        handler: () => {
+          this.openCameraImage(true);
+        }
+      },
+      {
+        text: 'Da Câmera',
+        icon: 'camera',
+        handler: () => {
+          this.openCameraImage(false);
+        }
+      }, {
+        text: 'Cancelar',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => {
+
+        }
+      }]
+    });
+    await actionSheet.present();
+  }
+
+  openCameraImage(album=false)
+  {
+    var sourceType;
+    if(album){
+      sourceType = this.camera.PictureSourceType.PHOTOLIBRARY;
+    } else {
+      sourceType = this.camera.PictureSourceType.CAMERA;
+    }
+
+    const options : CameraOptions = {
+      quality: 60,
+      destinationType: this.camera.DestinationType.DATA_URL,
+      //destinationType: this.camera.DestinationType.FILE_URI,
+      encodingType: this.camera.EncodingType.JPEG,
+      mediaType: this.camera.MediaType.PICTURE,
+      sourceType: sourceType,
+      correctOrientation: true,
+      targetWidth: 300,
+      targetHeight: 300,
+      allowEdit: true,
+    };
+
+    this.camera.getPicture(options).then((ImageData=>{
+      this.utilsSrv.getPesIdLogado().then((retPes) => {
+        var pesId = retPes["pesId"];
+        var img64 = "data:image/jpeg;base64,"+ImageData;
+
+        this.TbGrupoPessoa.atualizaFotoPerfil(pesId, img64).then((retGP) => {
+          if(retGP["erro"]){
+            this.utilsSrv.showAlert('Aviso!', '', retGP["msg"], ['OK']);
+          } else {
+            this.vGrupoPessoa["foto"] = '';
+            this.vGrupoPessoa["foto"] = this.utilsSrv.getWebsiteUrl() + retGP["foto"];
+            this.fotoLogado           = '';
+            this.fotoLogado           = this.vGrupoPessoa["foto"];
+
+            this.utilsSrv.getUsuario().then((retUsu) => {
+              var Usuario = retUsu["Usuario"];
+              Usuario["foto"] = retGP["foto"];
+              this.utilsSrv.setUsuario(Usuario);
+
+              this.events.publish('atualizaMenuFotoPerfil');
+              this.events.publish('atualizaTimelineFotoPerfil');
+            });
+          }
+        });
+      });
+    }),error=>{
+      this.utilsSrv.showAlert('Aviso!', '', 'Erro ao processar foto. Tente novamente mais tarde!', ['OK']);
+    });
   }
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalController, ActionSheetController, AlertController } from '@ionic/angular';
+import { ModalController, ActionSheetController, AlertController, Events } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { PgGaleriaImagemPage } from '../pg-galeria-imagem/pg-galeria-imagem.page';
@@ -50,10 +50,15 @@ export class HomePage {
     private iab: InAppBrowser,
     private alertCtr: AlertController,
     private camera: Camera,
+    private events: Events,
   ) {}
 
   async ngOnInit()
   {
+    this.events.subscribe('atualizaTimelineFotoPerfil', () => {
+      this.atualizaTimelineFotoPerfil();
+    });
+
     this.limpaFormPublicar();
     let sessionOk = await this.utilsSrv.validaSession();
     if(!sessionOk){
@@ -875,7 +880,17 @@ export class HomePage {
     await this.utilsSrv.closeLoader();
   }
 
-  clearInput(element){
+  clearInput(element)
+  {
     this.infoPostar[element] = '';
+  }
+
+  async atualizaTimelineFotoPerfil()
+  {
+    var retUsu  = await this.utilsSrv.getUsuario();
+    var Usuario = retUsu["Usuario"];
+    this.fotoLogado = this.utilsSrv.getWebsiteUrl() + Usuario['foto'];
+
+    console.log('atualizaTimelineFotoPerfil: ' + Usuario['foto']);
   }
 }

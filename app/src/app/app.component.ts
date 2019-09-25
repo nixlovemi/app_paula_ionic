@@ -55,6 +55,9 @@ export class AppComponent {
       this.events.subscribe('carregarProgressoInfo', () => {
         this.carregarProgressoInfo();
       });
+      this.events.subscribe('atualizaMenuFotoPerfil', () => {
+        this.atualizaMenuFotoPerfil();
+      });
     });
   }
 
@@ -170,13 +173,22 @@ export class AppComponent {
 
     var retProgresso = await this.tbGrupoPessoa.pegaProgresso(grpLogado, gruLogado);
     if(!retProgresso["erro"]){
-      this.vInfoProgresso.percentual = retProgresso.Progresso["progresso"];
-      this.vInfoProgresso.peso_falta = retProgresso.Progresso["dif_atual"];
+      this.vInfoProgresso.percentual = retProgresso["Progresso"]["progresso"];
+      this.vInfoProgresso.peso_falta = retProgresso["Progresso"]["dif_atual"];
 
-      this.vInfoProgressoGrupo.perc_progresso = retProgresso.Progresso_Grupo["percGrupo"] / 100;
-      this.vInfoProgressoGrupo.progresso      = retProgresso.Progresso_Grupo["percGrupo"];
-      this.vInfoProgressoGrupo.dias_ini       = retProgresso.Progresso_Grupo["diasGrupo"];
-      this.vInfoProgressoGrupo.dias_fim       = retProgresso.Progresso_Grupo["totalDiasGrupo"];
+      this.vInfoProgressoGrupo.perc_progresso = retProgresso["Progresso_Grupo"]["percGrupo"] / 100;
+      this.vInfoProgressoGrupo.progresso      = retProgresso["Progresso_Grupo"]["percGrupo"];
+      this.vInfoProgressoGrupo.dias_ini       = retProgresso["Progresso_Grupo"]["diasGrupo"];
+      this.vInfoProgressoGrupo.dias_fim       = retProgresso["Progresso_Grupo"]["totalDiasGrupo"];
     }
+  }
+
+  async atualizaMenuFotoPerfil()
+  {
+    var retUsu  = await this.utilsSrv.getUsuario();
+    var Usuario = retUsu["Usuario"];
+    this.infoUsuario.foto  = this.utilsSrv.getWebsiteUrl() + Usuario['foto'];
+
+    console.log('atualizaMenuFotoPerfil: ' + Usuario['foto']);
   }
 }
