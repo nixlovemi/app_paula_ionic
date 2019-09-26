@@ -33,7 +33,10 @@ export class PgGaleriaImagemPage implements OnInit {
   }
 
   closeModal() {
-    this.statusBar.styleDefault();
+    // this.statusBar.styleDefault();
+    this.statusBar.overlaysWebView(false);
+    this.statusBar.styleBlackOpaque();
+    this.statusBar.backgroundColorByHexString('#00acc1');
     this.modalController.dismiss();
   }
 }

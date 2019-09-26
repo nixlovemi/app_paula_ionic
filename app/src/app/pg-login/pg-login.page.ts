@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from  "@angular/router";
+import { Router, NavigationExtras } from  "@angular/router";
 import { TbLoginService } from '../TbLogin/tb-login.service';
 import { UtilsService } from '../utils.service';
-import { MenuController, Events } from '@ionic/angular';
+import { MenuController, Events, IonRouterOutlet } from '@ionic/angular';
 
 @Component({
   selector: 'app-pg-login',
@@ -21,6 +21,7 @@ export class PgLoginPage implements OnInit {
     private router: Router,
     public menuCtrl: MenuController,
     private events: Events,
+    private routerOutlet: IonRouterOutlet,
   ) { }
 
   ngOnInit()
@@ -28,7 +29,15 @@ export class PgLoginPage implements OnInit {
     this.menuCtrl.enable(false);
   }
 
-  async ionViewWillEnter(){ }
+  ionViewWillEnter()
+  {
+    this.routerOutlet.swipeGesture = false;
+  }
+
+  ionViewWillLeave()
+  {
+    this.routerOutlet.swipeGesture = true;
+  }
 
   async executaLogin()
   {
@@ -48,15 +57,27 @@ export class PgLoginPage implements OnInit {
     if(erro == true){
       this.utilsSrv.showAlert('Aviso!', '', msg, ['OK']);
     } else {
-      var vGrpId   = retorno['Grupos'][0].grp_id;
-      var vUsuario = retorno['Usuario'];
-      var vGrupos  = retorno['Grupos'];
+      var qtGrupos = Object.keys(retorno["Grupos"]).length;
+      if(qtGrupos > 1){
+        let navigationExtras: NavigationExtras = {
+          queryParams: {
+            retorno: JSON.stringify(retorno) //pq é um objeto
+          }
+        };
+        this.router.navigate(['/pg-login-sel-grupo'], navigationExtras);
+      } else {
+        var vGrpId   = retorno['Grupos'][0].grp_id;
+        var vUsuario = retorno['Usuario'];
+        var vGrupos  = retorno['Grupos'];
 
-      await this.utilsSrv.gravaInfoLogin(vGrpId, vUsuario, vGrupos);
-      await this.router.navigate(['/home']);
-      await this.events.publish('carregarMenuInfo');
-      await this.events.publish('carregarProgressoInfo');
+        this.carregaHome(vGrpId, vUsuario, vGrupos);
+      }
     }
     // ===================================
+  }
+
+  async carregaHome(vGrpId, vUsuario, vGrupos)
+  {
+    await this.utilsSrv.carregaHome(vGrpId, vUsuario, vGrupos);
   }
 }

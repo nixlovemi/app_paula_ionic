@@ -46,7 +46,9 @@ export class AppComponent {
   initializeApp()
   {
     this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
+      this.statusBar.overlaysWebView(false);
+      this.statusBar.styleBlackOpaque();
+      this.statusBar.backgroundColorByHexString('#00acc1');
       this.splashScreen.hide();
 
       this.events.subscribe('carregarMenuInfo', () => {
@@ -70,7 +72,7 @@ export class AppComponent {
   {
     await this.menuCtrl.enable(false);
     await this.utilsSrv.limpaSession();
-    this.router.navigate(['']);
+    await this.router.navigate(['']);
   }
 
   async carregarMenuInfo()
@@ -188,7 +190,5 @@ export class AppComponent {
     var retUsu  = await this.utilsSrv.getUsuario();
     var Usuario = retUsu["Usuario"];
     this.infoUsuario.foto  = this.utilsSrv.getWebsiteUrl() + Usuario['foto'];
-
-    console.log('atualizaMenuFotoPerfil: ' + Usuario['foto']);
   }
 }

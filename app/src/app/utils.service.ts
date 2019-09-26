@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController, Events } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { Md5 } from 'ts-md5/dist/md5';
 import { File } from '@ionic-native/file/ngx';
+import { Router } from  "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,8 @@ export class UtilsService {
     private loadingCtr: LoadingController,
     private storage: Storage,
     public file: File,
+    private events: Events,
+    private router: Router,
   ) { }
 
   /* session */
@@ -445,6 +448,14 @@ export class UtilsService {
     }
   }
   /* ======= */
+
+  async carregaHome(vGrpId, vUsuario, vGrupos)
+  {
+    await this.gravaInfoLogin(vGrpId, vUsuario, vGrupos);
+    await this.events.publish('carregarMenuInfo');
+    await this.events.publish('carregarProgressoInfo');
+    await this.router.navigate(['/home']);
+  }
 
   getWsPath()
   {

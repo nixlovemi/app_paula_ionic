@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <!--<ion-buttons slot="start" class="text-info" color="#00bcd4">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>-->
+    <ion-title>
+      Escolha o grupo:
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card class="card-new card-white">
+    <ion-card-header>
+      <div class="title">
+        Seus grupos
+      </div>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let g of arrGrupos">
+          <ion-label>
+            {{g.grupo}}
+            <p class="lbl-periodo">Período: {{g.inicio}} - {{g.fim}}</p>
+          </ion-label>
+
+          <ion-button (click)="abrirGrupo(g.idx)" size="small">
+            Entrar
+            <ion-icon slot="end" name="share-alt"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <div style="width:100%; padding: 0 10px; margin-top:15px;">
+    <ion-button (click)="voltarLogin()" class="buttom-gray" expand="block">
+      <ion-icon slot="start" name="return-left"></ion-icon>
+      Voltar
+    </ion-button>
+  </div>
+</ion-content>

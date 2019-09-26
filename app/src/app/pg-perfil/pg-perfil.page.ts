@@ -3,7 +3,7 @@ import { Chart } from 'chart.js';
 import { UtilsService } from '../utils.service';
 import { TbGrupoPessoaService } from  "../TbGrupoPessoa/tb-grupo-pessoa.service";
 import { CurrencyPipe } from '@angular/common';
-import { ModalController, Events, ActionSheetController } from '@ionic/angular';
+import { ModalController, Events, ActionSheetController, IonRouterOutlet } from '@ionic/angular';
 import { PgLctoMedidasPage } from '../pg-lcto-medidas/pg-lcto-medidas.page';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import * as moment from 'moment';
@@ -60,6 +60,7 @@ export class PgPerfilPage implements OnInit {
     private events: Events,
     private actionSheetController: ActionSheetController,
     private camera: Camera,
+    private routerOutlet: IonRouterOutlet,
   ) { }
 
   ngOnInit()
@@ -143,8 +144,14 @@ export class PgPerfilPage implements OnInit {
     }
   }
 
+  ionViewWillLeave()
+  {
+    this.routerOutlet.swipeGesture = true;
+  }
+
   async ionViewWillEnter()
   {
+    this.routerOutlet.swipeGesture = false;
     await this.utilsSrv.getLoader('Carregando ...', 'dots');
 
     let retGrpLogado = await this.utilsSrv.getGrpIdLogado();

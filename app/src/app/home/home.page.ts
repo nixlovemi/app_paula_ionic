@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalController, ActionSheetController, AlertController, Events } from '@ionic/angular';
+import { ModalController, ActionSheetController, AlertController, Events, IonRouterOutlet } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { PgGaleriaImagemPage } from '../pg-galeria-imagem/pg-galeria-imagem.page';
@@ -51,6 +51,7 @@ export class HomePage {
     private alertCtr: AlertController,
     private camera: Camera,
     private events: Events,
+    private routerOutlet: IonRouterOutlet,
   ) {}
 
   async ngOnInit()
@@ -88,13 +89,15 @@ export class HomePage {
     this.grpLogado    = grpLogado;
   }
 
-  async ionViewDidEnter()
+  ionViewWillLeave()
   {
-
+    this.routerOutlet.swipeGesture = true;
   }
 
   async ionViewWillEnter()
   {
+    this.routerOutlet.swipeGesture = false;
+
     var retGruLogado = await this.utilsSrv.getGruIdLogado();
     if(!retGruLogado["erro"]){
       var gruIdLogado   = retGruLogado["gruId"];
@@ -890,7 +893,5 @@ export class HomePage {
     var retUsu  = await this.utilsSrv.getUsuario();
     var Usuario = retUsu["Usuario"];
     this.fotoLogado = this.utilsSrv.getWebsiteUrl() + Usuario['foto'];
-
-    console.log('atualizaTimelineFotoPerfil: ' + Usuario['foto']);
   }
 }
