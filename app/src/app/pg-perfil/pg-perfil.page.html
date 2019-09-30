@@ -17,11 +17,11 @@
     <ion-card-content>
       <span id="spn-nome">{{nomeLogado}}</span>
       <span id="spn-email">{{emailLogado}}</span>
-      <p>Cliente, participante do grupo <b>{{nomeGrupoLogado}}</b> no período de {{dtIniGrupoLogado}} a {{dtFimGrupoLogado}}.</p>
+      <p>{{pessoaTipoLogado}}, participante do grupo <b>{{nomeGrupoLogado}}</b> no período de {{dtIniGrupoLogado}} a {{dtFimGrupoLogado}}.</p>
     </ion-card-content>
   </ion-card>
 
-  <ion-card class="card-new card-white">
+  <ion-card *ngIf="vEhCliente" class="card-new card-white">
     <ion-card-header>
       <div class="title">
         Medidas Iniciais

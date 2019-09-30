@@ -29,6 +29,7 @@ export class AppComponent {
     dias_ini: 0,
     dias_fim: 0,
   };
+  vEhCliente = false;
 
   constructor(
     private platform: Platform,
@@ -86,6 +87,7 @@ export class AppComponent {
     if(Usuario['foto'] != "" && Usuario['foto'] != null){
       this.infoUsuario.foto  = this.utilsSrv.getWebsiteUrl() + Usuario['foto'];
     }
+    this.vEhCliente = Usuario["cliente"] == "1";
 
     var retGruLogado = await this.utilsSrv.getGruIdLogado();
     var GrupoLogado  = retGruLogado["gruId"];

@@ -26,10 +26,12 @@ export class PgPerfilPage implements OnInit {
   infoDemais;
   infoProgresso;
   infoImc;
+  vEhCliente = false;
 
   fotoLogado;
   nomeLogado;
   emailLogado;
+  pessoaTipoLogado;
   nomeGrupoLogado;
   dtIniGrupoLogado;
   dtFimGrupoLogado;
@@ -161,8 +163,10 @@ export class PgPerfilPage implements OnInit {
     var retUsuario = await this.utilsSrv.getUsuario();
     if(!retUsuario["erro"]){
       this.vGrupoPessoa = retUsuario["Usuario"];
-      this.nomeLogado   = this.vGrupoPessoa["usuario"];
-      this.emailLogado  = this.vGrupoPessoa["email"];
+      this.nomeLogado       = this.vGrupoPessoa["usuario"];
+      this.emailLogado      = this.vGrupoPessoa["email"];
+      this.vEhCliente       = this.vGrupoPessoa["cliente"] == "1";
+      this.pessoaTipoLogado = this.vGrupoPessoa["pessoa_tipo"];
 
       this.fotoLogado = this.utilsSrv.getPathImgPadrao();
       if(this.vGrupoPessoa["foto"] != "" && this.vGrupoPessoa["foto"] != null){
