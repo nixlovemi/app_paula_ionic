@@ -35,7 +35,7 @@ export class PgPerfilPage implements OnInit {
   nomeGrupoLogado;
   dtIniGrupoLogado;
   dtFimGrupoLogado;
-  showLctoInicial;
+  showLctoInicial = false;
   vInfoInicial = {
     data:'',
     altura:'',
