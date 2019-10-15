@@ -91,10 +91,12 @@ export class PgPerfilPage implements OnInit {
     if(typeof this.infoDemais != 'undefined' && Object.keys(this.infoDemais).length > 0){
       let grafLabel = [];
       let grafPeso  = [];
+      let grafObj   = [];
       var grafIdx   = 1;
 
       grafLabel.push(grafIdx + '');
       grafPeso.push(this.infoInicial["gpi_peso"]);
+      grafObj.push(this.infoInicial["gpi_peso_objetivo"]);
       grafIdx = grafIdx + 1;
 
       for(let idx in this.infoDemais){
@@ -102,6 +104,7 @@ export class PgPerfilPage implements OnInit {
 
         grafLabel.push(grafIdx + '');
         grafPeso.push(medidaDemais["gpi_peso"]);
+        grafObj.push(this.infoInicial["gpi_peso_objetivo"]);
         grafIdx = grafIdx + 1;
       }
 
@@ -131,6 +134,28 @@ export class PgPerfilPage implements OnInit {
               pointHitRadius: 10,
               data: grafPeso,
               spanGaps: false
+            },
+            {
+              label: "Objetivo",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "rgba(176,6,197,0.4)",
+              borderColor: "rgba(176,6,197,1)",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "rgba(176,6,197,1)",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "rgba(176,6,197,1)",
+              pointHoverBorderColor: "rgba(220,220,220,1)",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: grafObj,
+              spanGaps: false
             }
           ],
           options: {
@@ -138,7 +163,14 @@ export class PgPerfilPage implements OnInit {
             maintainAspectRatio: false,
             legend: {
               onClick: null
-            }
+            },
+            yAxes: [{
+              ticks: {
+                min: 0,
+                max: 100,
+                stepSize: 20
+              }
+            }]
           }
         }
       });
