@@ -11,8 +11,8 @@ import { MenuController, Events, IonRouterOutlet } from '@ionic/angular';
 })
 export class PgLoginPage implements OnInit {
   frmLogin = {
-    usuario:'cliente1@gmail.com',
-    senha:'Sdrobs69',
+    usuario:'',
+    senha:'',
   }
 
   constructor(
