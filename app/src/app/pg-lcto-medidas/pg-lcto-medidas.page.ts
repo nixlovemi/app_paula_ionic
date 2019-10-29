@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UtilsService } from '../utils.service';
-import { ModalController, NavParams, IonRouterOutlet } from '@ionic/angular';
+import { ModalController, NavParams } from '@ionic/angular';
 import { TbGrupoPessoaInfoService } from '../TbGrupoPessoaInfo/tb-grupo-pessoa-info.service';
 import * as moment from 'moment';
 import 'moment-timezone';
@@ -28,7 +28,6 @@ export class PgLctoMedidasPage implements OnInit {
     public modalController: ModalController,
     public navParams: NavParams,
     public TbGrupoPessoaInfoSvc: TbGrupoPessoaInfoService,
-    private routerOutlet: IonRouterOutlet,
   ) { }
 
   ngOnInit()
@@ -47,13 +46,11 @@ export class PgLctoMedidasPage implements OnInit {
 
   ionViewWillLeave()
   {
-    this.routerOutlet.swipeGesture = true;
+
   }
 
   async ionViewWillEnter()
   {
-    this.routerOutlet.swipeGesture = false;
-
     let retGrpLogado = await this.utilsSrv.getGrpIdLogado();
     var grpLogado    = retGrpLogado["grpId"];
     this.grpLogado   = grpLogado;

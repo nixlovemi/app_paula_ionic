@@ -9,6 +9,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
+import { PgLctoMedidasPageModule } from './pg-lcto-medidas/pg-lcto-medidas.module';
 import { PgGaleriaImagemPageModule } from './pg-galeria-imagem/pg-galeria-imagem.module';
 import { File } from '@ionic-native/file/ngx';
 import { DocumentViewer } from '@ionic-native/document-viewer/ngx';
@@ -18,7 +19,7 @@ import { IonicStorageModule } from '@ionic/storage';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { Camera } from '@ionic-native/camera/ngx';
 import { CurrencyPipe } from '@angular/common';
-import { PgLctoMedidasPageModule } from './pg-lcto-medidas/pg-lcto-medidas.module';
+
 import { BrMaskerModule } from 'br-mask';
 
 import { registerLocaleData } from '@angular/common';
@@ -30,12 +31,12 @@ registerLocaleData(localePt, 'pt');
   entryComponents: [],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(),
     AppRoutingModule,
     PgGaleriaImagemPageModule,
     PgLctoMedidasPageModule,
     HttpModule,
     BrMaskerModule,
+    IonicModule.forRoot(),
     IonicStorageModule.forRoot(),
   ],
   providers: [
