@@ -9,8 +9,7 @@ const routes: Routes = [
   { path: 'pg-perfil', loadChildren: './pg-perfil/pg-perfil.module#PgPerfilPageModule' },
   { path: 'pg-login', loadChildren: './pg-login/pg-login.module#PgLoginPageModule' },
   { path: 'pg-lcto-medidas', loadChildren: './pg-lcto-medidas/pg-lcto-medidas.module#PgLctoMedidasPageModule' },
-  { path: 'pg-login-sel-grupo', loadChildren: './pg-login-sel-grupo/pg-login-sel-grupo.module#PgLoginSelGrupoPageModule' },
-  { path: 'teste', loadChildren: './teste/teste.module#TestePageModule' }
+  { path: 'pg-login-sel-grupo', loadChildren: './pg-login-sel-grupo/pg-login-sel-grupo.module#PgLoginSelGrupoPageModule' }
 ];
 
 @NgModule({
