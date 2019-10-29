@@ -29,9 +29,19 @@ export class PgLoginPage implements OnInit {
     this.menuCtrl.enable(false);
   }
 
-  ionViewWillEnter()
+  async ionViewWillEnter()
   {
     this.routerOutlet.swipeGesture = false;
+
+    // se tem login auto gravado, executa
+    var retAutoLogin = await this.utilsSrv.getAutoLogin();
+    var AutoLogin    = retAutoLogin["AutoLogin"];
+    var usuario      = AutoLogin["usuario"];
+    var senha        = AutoLogin["senha"];
+
+    if(usuario != "" && senha != ""){
+      this.doLogin(usuario, senha);
+    }
   }
 
   ionViewWillLeave()
@@ -41,13 +51,17 @@ export class PgLoginPage implements OnInit {
 
   async executaLogin()
   {
+    let usuario = this.frmLogin.usuario;
+    let senha   = this.frmLogin.senha;
+    this.doLogin(usuario, senha);
+  }
+
+  async doLogin(usuario, senha)
+  {
     // pega info, faz login e pega retorno
     await this.utilsSrv.getLoader('Carregando ...', 'dots');
 
-    let usuario = this.frmLogin.usuario;
-    let senha   = this.frmLogin.senha;
     let retorno = await this.loginSrv.executaLogin(usuario, senha);
-
     let erro    = retorno['erro'];
     let msg     = retorno['msg'];
     let httpSts = retorno['httpStatus'];
@@ -57,6 +71,9 @@ export class PgLoginPage implements OnInit {
     if(erro == true){
       this.utilsSrv.showAlert('Aviso!', '', msg, ['OK']);
     } else {
+      // deu td certo, grava p login auto
+      await this.utilsSrv.setAutoLogin(usuario, senha);
+
       var qtGrupos = Object.keys(retorno["Grupos"]).length;
       if(qtGrupos > 1){
         let navigationExtras: NavigationExtras = {

@@ -69,6 +69,7 @@ export class UtilsService {
     await this.clearGrpIdLogado();
     await this.clearGruIdLogado();
     await this.clearPesIdLogado();
+    await this.clearAutoLogin();
   }
 
   async gravaInfoLogin(vGrpId, vUsuario, vGrupos)
@@ -87,6 +88,83 @@ export class UtilsService {
     }
 
     return true;
+  }
+
+  setAutoLogin(usuario, senha)
+  {
+    return new Promise(
+    (resolve, reject) => {
+      let objRet = {
+        msg: '',
+        erro: false,
+        usuario: usuario,
+        senha: senha,
+      };
+      var AutoLogin = {
+        usuario: usuario,
+        senha: senha,
+      };
+
+      this.storage.set('AutoLogin', AutoLogin)
+      .then((ret) => {
+        resolve(objRet);
+      })
+      .catch((ret) => {
+        objRet.erro = true;
+        objRet.msg  = 'Erro ao gravar Auto Login';
+        reject(objRet);
+      });
+    });
+  }
+
+  getAutoLogin()
+  {
+    return new Promise(
+    (resolve, reject) => {
+      let objRet = {
+        msg: '',
+        erro: false,
+        AutoLogin: {},
+      };
+
+      this.storage.get('AutoLogin')
+      .then((AutoLogin:any) => {
+        objRet.AutoLogin = AutoLogin;
+        resolve(objRet);
+      })
+      .catch((err) => {
+        objRet.erro = true;
+        objRet.msg  = 'Erro ao buscar Auto Login.';
+        reject(objRet);
+      });
+    });
+  }
+
+  clearAutoLogin()
+  {
+    return new Promise(
+    (resolve, reject) => {
+      let objRet = {
+        msg: '',
+        erro: false,
+        usuario: '',
+        senha: '',
+      };
+      var AutoLogin = {
+        usuario: '',
+        senha: '',
+      };
+
+      this.storage.set('AutoLogin', AutoLogin)
+      .then((ret) => {
+        resolve(objRet);
+      })
+      .catch((ret) => {
+        objRet.erro = true;
+        objRet.msg  = 'Erro ao limpar Auto Login';
+        reject(objRet);
+      });
+    });
   }
 
   setUsuario(Usuario)
@@ -529,7 +607,8 @@ export class UtilsService {
   * decimais: quantidade de casas decimais, por padrão será 2
   * simbolo: tipo de moeda, por padrão é vazia
   */
-  formatMoney(valor, decimais = 2, simbolo = '') {
+  formatMoney(valor, decimais = 2, simbolo = '')
+  {
     if (isNaN(valor)) return '';
     else {
       let vValor = parseFloat(valor);
