@@ -46,7 +46,7 @@
     "core-js": "^2.5.4",
     "ionic-long-press": "^2.0.1",
     "ionic-native": "^2.9.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "moment-timezone": "^0.5.26",
     "rxjs": "~6.5.1",
     "ts-md5": "^1.2.6",
